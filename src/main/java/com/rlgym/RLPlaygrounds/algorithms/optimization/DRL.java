@@ -35,20 +35,20 @@ public class DRL implements Optimization{
 		int numInputs= dataExchange.getIFMap(hiperParameters,"numInputs");
 		int numHiddenNodes= dataExchange.getIFMap(hiperParameters,"numHiddenNodes");
 		int numOutputs= dataExchange.getIFMap(hiperParameters,"numOutputs");
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-			    .seed(seed)
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
 			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
 			    .list()
 			    .layer(0, new DenseLayer.Builder().nIn(numInputs).nOut(numHiddenNodes)
 			        .weightInit(WeightInit.XAVIER)
 			        .activation(Activation.RELU)
 			        .build())
-			    .layer(1, new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
+			    .layer(1, new OutputLayer.Builder(LossFunction.SQUARED_LOSS)
 			        .weightInit(WeightInit.XAVIER)
-			        .activation(Activation.SOFTMAX)
+			        .activation(Activation.RELU)
 			        .nIn(numHiddenNodes).nOut(numOutputs).build())
 			    .build();
 		this.model =  new MultiLayerNetwork(conf);
+		this.model.init();
 	}
 	
 	public void minimizeEpochs(Enviroment env, Model model, Map<String, Object> parameters) {
@@ -87,7 +87,7 @@ public class DRL implements Optimization{
 				
 				//fit the neural network
 				INDArray inputTemp = Nd4j.create(arrayListToArray(tempEpisode));
-				INDArray yJT = Nd4j.create(new double[]{yJ}, new int[]{1,4});
+				INDArray yJT = Nd4j.create(new double[]{yJ}, new int[]{4});
 				DataSet ds = new DataSet(inputTemp, yJT);
 
 				this.model.fit(ds);
