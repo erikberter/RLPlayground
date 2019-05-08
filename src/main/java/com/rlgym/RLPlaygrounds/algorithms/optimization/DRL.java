@@ -3,6 +3,7 @@ package com.rlgym.RLPlaygrounds.algorithms.optimization;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.deeplearning4j.nn.api.*;
 import org.deeplearning4j.nn.conf.*;
@@ -55,11 +56,15 @@ public class DRL implements Optimization{
 		ArrayList<ArrayList<int[]>> episodes = new ArrayList<ArrayList<int[]>>();
 		
 		for(int i  = 0; i < dataExchange.getIFMap(parameters,"epochs");i++){
+			System.out.println("Estamos en i:" + Integer.toString(i));
+			int q = 0;
 			//State & Action
 			int newAction;
 			int[] currentState = env.getResetState();
 			int[] newState;
 			while(!env.isEndState(currentState)){
+				System.out.println("Estamos en q:" + Integer.toString(q));
+				q++;
 				//Look for action
 				if(Math.random() < dataExchange.getDFMap(parameters,"exploration_rate"))
 						newAction = getRandomAction(currentState, env.getActionNumber()) ;
@@ -87,10 +92,17 @@ public class DRL implements Optimization{
 				
 				//fit the neural network
 				INDArray inputTemp = Nd4j.create(arrayListToArray(tempEpisode));
-				INDArray yJT = Nd4j.create(new double[]{yJ}, new int[]{4});
+				INDArray yJT = Nd4j.create(new double[]{yJ}, new int[]{1,1});
 				DataSet ds = new DataSet(inputTemp, yJT);
 
 				this.model.fit(ds);
+				
+				//Change current State
+				currentState = newState;
+				
+				env.printMap(currentState);
+				Scanner sc = new Scanner(System.in);
+				sc.nextInt();
 			}
 		}
 		

@@ -1,5 +1,6 @@
 com\rlgym\RLPlaygrounds\visual\window\dialogParameters.class
 com\rlgym\RLPlaygrounds\visual\window\mainFrame.class
+com\rlgym\RLPlaygrounds\main\resources\log4j.propierties
 com\rlgym\RLPlaygrounds\enviroment\games\GridWorld.class
 com\rlgym\RLPlaygrounds\model\Model.class
 com\rlgym\RLPlaygrounds\configuration\config.class

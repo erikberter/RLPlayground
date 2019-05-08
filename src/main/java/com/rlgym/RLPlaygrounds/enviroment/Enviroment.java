@@ -23,8 +23,12 @@ public interface Enviroment {
 	public void resetWorld();
 	public void doAction(int action);
 	
+	//Visual Functions
+	public void printMap(int[] state);
+	
 	
 	//Static Enviroment Functions
 	public int[] getStateFromStateAction(int[] currentState, int newAction);
+	
 	
 }

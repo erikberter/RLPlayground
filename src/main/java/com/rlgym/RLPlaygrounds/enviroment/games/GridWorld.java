@@ -93,4 +93,9 @@ public class GridWorld implements Enviroment{
 		
 	}
 
+	public void printMap(int[] state) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

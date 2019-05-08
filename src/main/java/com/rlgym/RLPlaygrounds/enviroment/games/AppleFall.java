@@ -69,7 +69,7 @@ public class AppleFall implements Enviroment{
 		//Move board
 		if(moveP1 == 1 && this.boardx>1)
 			this.boardx--;
-		else if(moveP1 == -1 && this.boardx< 10)
+		else if(moveP1 == 0 && this.boardx< 10)
 			this.boardx++;
 		//Move apple
 		result[0] = this.boardx;
@@ -82,6 +82,21 @@ public class AppleFall implements Enviroment{
 	public void doAction(int action) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void printMap(int[] state) {
+		System.out.println("El estado es [" + Integer.toString(state[0]) + ", " + Integer.toString(state[1]) + ", " + Integer.toString(state[2])+  "]");
+		for(int i = 0; i < 9; i++){
+			for(int j = 0; j < 10; j++){
+				if(i==state[1] && j==state[2]) System.out.print("#");
+				else System.out.print("_");
+			}
+			System.out.println();
+		}
+		for(int j = 0; j < 10; j++){
+			if(j==state[0]) System.out.print("o");
+			else System.out.print("-");
+		}
 	}
 	
 	
