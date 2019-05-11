@@ -1,8 +1,8 @@
 package com.rlgym.RLPlaygrounds.enviroment.games;
 
-import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
+import com.rlgym.RLPlaygrounds.enviroment.types.StaticEnviroment;
 
-public class GridWorld implements Enviroment{
+public class GridWorld implements StaticEnviroment{
 
 	double[][] gridWorldRewards;
 	double reward_OOB;

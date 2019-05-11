@@ -5,9 +5,11 @@ import java.util.Map;
 
 
 import com.rlgym.RLPlaygrounds.algorithms.optimization.*;
+import com.rlgym.RLPlaygrounds.algorithms.optimization.categories.*;
 import com.rlgym.RLPlaygrounds.configuration.config;
-import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
+import com.rlgym.RLPlaygrounds.enviroment.*;
 import com.rlgym.RLPlaygrounds.enviroment.games.*;
+import com.rlgym.RLPlaygrounds.enviroment.types.StaticEnviroment;
 import com.rlgym.RLPlaygrounds.model.Model;
 import com.rlgym.RLPlaygrounds.model.enviromentalModels.*;
 
@@ -33,7 +35,7 @@ public class Agent {
 		if(envName.equals("GridWorld"))
 			this.enviroment = new GridWorld();
 		else if(envName.equals("AppleFall"))
-			this.enviroment = new AppleFall();
+			this.enviroment = new AppleFall(12,10);
 	}
 	
 	
@@ -43,9 +45,9 @@ public class Agent {
 	}
 	public void setOptimization(String optimizatorName){
 		if(optimizatorName.equals("Qsa Optimization"))
-			this.optimizer = new QLearning(this.enviroment.getStateNumber(), this.enviroment.getActionNumber());
-		else if(optimizatorName.equals("DRL"))
-			this.optimizer = new DRL(config.hiperParameters);
+			this.optimizer = new QLearning((StaticEnviroment) this.enviroment);
+		else if(optimizatorName.equals("DQN"))
+			this.optimizer = new DQN(config.hiperParameters);
 	}
 	
 	

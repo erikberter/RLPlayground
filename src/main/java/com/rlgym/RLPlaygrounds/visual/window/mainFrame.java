@@ -112,7 +112,7 @@ public class mainFrame {
 		frame.getContentPane().add(comboBox);
 		
 		final JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Algorithms", "Qsa Optimization", "DRL"}));
+		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Algorithms", "Qsa Optimization", "DQN"}));
 		comboBox_1.setEditable(true);
 		comboBox_1.setBounds(10, 276, 140, 20);
 		frame.getContentPane().add(comboBox_1);

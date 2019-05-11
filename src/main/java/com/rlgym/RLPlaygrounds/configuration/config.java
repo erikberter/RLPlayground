@@ -3,6 +3,8 @@ package com.rlgym.RLPlaygrounds.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
+
 public class config extends Throwable{
 
 	public static Map<String, Object> parameters;
@@ -26,11 +28,16 @@ public class config extends Throwable{
 	}
 	
 	public static void resetHiperParameters(){
-		hiperParameters.put("seed", 0);
+		hiperParameters.put("seed", 142);
 		hiperParameters.put("learning_rate", 0.1);
-		hiperParameters.put("numInputs", 4);
+		hiperParameters.put("numInputs", 6);
 		hiperParameters.put("numHiddenNodes", 5);
-		hiperParameters.put("numOutputs", 1);
+		hiperParameters.put("numOutputs", 3);
+		hiperParameters.put("minibatch", 22);
+		
+		hiperParameters.put("inputHeight", 10);
+		hiperParameters.put("inputWidth", 12);
+		hiperParameters.put("inputChannels", 1);
 	}
 	
 	

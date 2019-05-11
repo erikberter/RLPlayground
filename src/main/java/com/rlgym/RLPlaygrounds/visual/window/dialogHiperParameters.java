@@ -105,6 +105,15 @@ public class dialogHiperParameters extends JDialog {
 		slider_5.setBounds(291, 92, 200, 26);
 		panel_2.add(slider_5);
 		
+		JLabel lblMinibatch = new JLabel("Minibatch");
+		lblMinibatch.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMinibatch.setBounds(10, 129, 200, 14);
+		panel_2.add(lblMinibatch);
+		
+		JSlider slider_6 = new JSlider();
+		slider_6.setBounds(10, 154, 200, 26);
+		panel_2.add(slider_6);
+		
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Explore", null, panel, null);
 		panel.setLayout(null);
