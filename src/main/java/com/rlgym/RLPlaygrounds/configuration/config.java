@@ -18,7 +18,11 @@ public class config extends Throwable{
 		resetParameters();
 		resetHiperParameters();
 	}
-	
+	//Deberia cambiar todo a la misma estatica
+	/*
+	 * O bien palabra_siguiente_palabra
+	 * O bien palabraSiguientePalabra
+	 */
 	public static void resetParameters(){
 		parameters.put("learning_rate",0.5);
 		parameters.put("discount_rate",0.5);
@@ -29,14 +33,14 @@ public class config extends Throwable{
 	
 	public static void resetHiperParameters(){
 		hiperParameters.put("seed", 142);
-		hiperParameters.put("learning_rate", 0.1);
+		hiperParameters.put("updaterRate", 0.001);
 		hiperParameters.put("numInputs", 6);
 		hiperParameters.put("numHiddenNodes", 5);
 		hiperParameters.put("numOutputs", 3);
 		hiperParameters.put("minibatch", 22);
 		
-		hiperParameters.put("inputHeight", 10);
-		hiperParameters.put("inputWidth", 12);
+		hiperParameters.put("inputHeight", 5);
+		hiperParameters.put("inputWidth", 6);
 		hiperParameters.put("inputChannels", 1);
 	}
 	

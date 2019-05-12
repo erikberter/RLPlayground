@@ -154,7 +154,7 @@ public class mainFrame {
 		JButton btnReset = new JButton("Set Manager");
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				manager = new Agent((String)comboBox.getEditor().getItem(), (String)comboBox_2.getEditor().getItem(), (String)comboBox_1.getEditor().getItem(), config.parameters, config.hiperParameters);
+				manager = new Agent((String)comboBox.getEditor().getItem(), (String)comboBox_1.getEditor().getItem(), config.parameters, config.hiperParameters);
 			}
 		});
 		btnReset.setBounds(10, 407, 102, 23);
@@ -252,7 +252,7 @@ public class mainFrame {
 		JButton btnHiperparameters = new JButton("Hiperparameters");
 		btnHiperparameters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				dialogHiperParameters j = new dialogHiperParameters();
+				dialogHiperParametersDQN j = new dialogHiperParametersDQN();
 				j.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				j.setVisible(true);
 			}

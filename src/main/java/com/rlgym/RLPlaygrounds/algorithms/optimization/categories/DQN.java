@@ -27,30 +27,31 @@ import com.rlgym.RLPlaygrounds.algorithms.optimization.EnviromentOptimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
 import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
-import com.rlgym.RLPlaygrounds.enviroment.types.StaticEnviroment;
-import com.rlgym.RLPlaygrounds.model.Model;
+
 
 import com.rlgym.RLPlaygrounds.configuration.config;
 
 public class DQN implements EnviromentOptimization{
 
-	MultiLayerNetwork model;
+	private MultiLayerNetwork model;
 	
-	public DQN(Map<String, Object> hiperParameters) {
-		int seed = dataExchange.getIFMap(hiperParameters,"seed");
-		double learningRate= dataExchange.getDFMap(hiperParameters,"learning_rate");
-		int numInputs= dataExchange.getIFMap(hiperParameters,"numInputs");
-		int numHiddenNodes= dataExchange.getIFMap(hiperParameters,"numHiddenNodes");
-		int numOutputs= dataExchange.getIFMap(hiperParameters,"numOutputs");
+	private int inputHeight, inputWidth, inputChannels;
+	
+	private int seed, numInputs, numOutputs;
+	private double updaterRate, discountFactor;
+	
+	private int minibatch;
+	
+	
+	
+	public DQN() {
+		initializeInternalVariablesFromConfig();
 		
-		int inputHeight = dataExchange.getIFMap(hiperParameters,"inputHeight");
-		int inputWidth = dataExchange.getIFMap(hiperParameters,"inputWidth");
-		int inputChannels = dataExchange.getIFMap(hiperParameters,"inputChannels");
-	
+		// TODO Deberia hacer una funcion para networks personalizadas
 		MultiLayerConfiguration conf  = new NeuralNetConfiguration.Builder()
-				.seed(seed)
+				.seed(this.seed)
 				.weightInit(WeightInit.XAVIER)
-                .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).updater(new RmsProp(0.001))
+                .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT).updater(new RmsProp(this.updaterRate))
                 .list()
                 .layer(0, new ConvolutionLayer.Builder(3,3).stride(1,1).padding(2,2).nIn(inputChannels).nOut(3)
                 		.activation(Activation.IDENTITY).name("layer0").build())//ConvINIT
@@ -61,14 +62,14 @@ public class DQN implements EnviromentOptimization{
                 .layer(3, new SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX).kernelSize(3,3)
                         .stride(2,2).name("layer3").build())//MAXPool
                 .layer(4, new DenseLayer.Builder().activation(Activation.RELU)
-                        .nOut(20).name("layer4").build())//Dense
+                        .nOut(13).name("layer4").build())//Dense
                 .layer(5, new DenseLayer.Builder().activation(Activation.RELU)
-                        .nOut(20).name("layer4").build())//Dense
+                        .nOut(8).name("layer4").build())//Dense
                 .layer(6, new OutputLayer.Builder(LossFunction.MSE)
                         .nOut(numOutputs)
                         .activation(Activation.IDENTITY).name("layer5")
                         .build())//OUT
-                .setInputType(InputType.convolutional(inputHeight, inputWidth, inputChannels))
+                .setInputType(InputType.convolutional(this.inputHeight, this.inputWidth, this.inputChannels))
                 .build();
 		
 		
@@ -77,36 +78,56 @@ public class DQN implements EnviromentOptimization{
 	
 	}
 	
+	public void initializeInternalVariablesFromConfig() {
+		//La conversión Objeto -> tipo está teniendo que ser por Objeto->String->Tipo y ademas de un mapa
+		//Para reducir este tiempo se cogerán las variables al comienzo de la ejecución o cuando sea necesario
+		
+		this.seed = dataExchange.getIFMap(config.hiperParameters,"seed");
+		this.numInputs= dataExchange.getIFMap(config.hiperParameters,"numInputs");
+		this.numOutputs= dataExchange.getIFMap(config.hiperParameters,"numOutputs");
+		
+		this.inputHeight = dataExchange.getIFMap(config.hiperParameters,"inputHeight");
+		this.inputWidth = dataExchange.getIFMap(config.hiperParameters,"inputWidth");
+		this.inputChannels = dataExchange.getIFMap(config.hiperParameters,"inputChannels");
+		
+		this.updaterRate = dataExchange.getDFMap(config.hiperParameters,"updaterRate");
+		this.discountFactor = dataExchange.getDFMap(config.parameters,"discount_rate");
+		
+		this.minibatch = dataExchange.getIFMap(config.hiperParameters,"minibatch");
+	}
+	
+	
 	private ScreenBasedEnviroment checkValidity(Enviroment env) throws Exception{
-		StaticEnviroment sEnv;
 		if(env instanceof ScreenBasedEnviroment)
 			return (ScreenBasedEnviroment) env;
 		else
 			throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
 	}
 
-	public void minimizeEpochs(Enviroment env, Model model, Map<String, Object> parameters) {
+	public void minimizeEpochs(Enviroment env, Map<String, Object> parameters) {
 		
 		ScreenBasedEnviroment sEnv;
 		try {
 			sEnv = checkValidity(env);
 		} catch (Exception e) {
-			System.err.println("The enviroment type in minimizeEpochs is not Static");
+			System.err.println(e.getMessage());
 			return;
 		}
 		
 		ArrayList<ArrayList<double[][]>> episodes = new ArrayList<ArrayList<double[][]>>();
-		int minibatch = dataExchange.getIFMap(config.hiperParameters,"minibatch");
+		
 		
 		//for(int i  = 1; i < dataExchange.getIFMap(parameters,"epochs");i++){
 		for(int i = 1; i < 10000; i++) {
 			int newAction;
 			sEnv.resetWorld();
 			
-			if(i%10==0) printResult(sEnv, model, parameters);
+			if(i%10==0) printResult(sEnv, parameters);
 			if(i%10==0) System.out.println("Estamos en el momento: " + i);
 			if(i%500==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
-			if(i%20==0) System.out.println("Estamos en el " + i + " : " + getResult(sEnv, model, parameters));
+			if(i%20==0) System.out.println("Estamos en el " + i + " : " + getResult(sEnv, parameters));
+			
+			
 			while(!sEnv.isEndState()) {
 				
 				
@@ -126,9 +147,9 @@ public class DQN implements EnviromentOptimization{
 				episodes.add(tempEpisode);
 				
 				
-				if(episodes.size() > minibatch) {
-					int epPoint = (int)(Math.random()*(episodes.size()-minibatch));
-					for(int j = 0; j < minibatch; j++) {
+				if(episodes.size() > this.minibatch) {
+					int epPoint = (int)(Math.random()*(episodes.size()-this.minibatch));
+					for(int j = 0; j < this.minibatch; j++) {
 						double[][] screenTP = episodes.get(epPoint+j).get(0);//s_t
 						int actionT = (int) episodes.get(epPoint+j).get(1)[0][0];//action
 						double yJ = episodes.get(epPoint+j).get(2)[0][0];//reward
@@ -137,11 +158,11 @@ public class DQN implements EnviromentOptimization{
 						
 						
 						if(isEndStateT==1.0)
-							yJ+=dataExchange.getDFMap(parameters,"discount_factor")*getGreedyValue(screenT, env.getActionNumber());
+							yJ+=this.discountFactor*getGreedyValue(screenT, env.getActionNumber());
 						
 						
 						INDArray inputTemp = Nd4j.create(screenTP);
-						inputTemp = inputTemp.reshape(new int[] {1,1,10,12});
+						inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 						INDArray yJT = this.model.output(inputTemp);//Q(s;0)
 						double tempCoord = yJT.getDouble(actionT);//Q(s,a;0)
 						//yJT.putScalar(new int[] {actionT},tempCoord+yJ);//Q(s,a;0)+y_j
@@ -158,14 +179,14 @@ public class DQN implements EnviromentOptimization{
 		
 	}
 
-	public void minimizeLoss(Enviroment env, Model model, Map<String, Object> parameters) {
-		// TODO Auto-generated method stub
+	public void minimizeLoss(Enviroment env,  Map<String, Object> parameters) {
+		// TODO Hacer la minimizeLoss
 		
 	}
 
 	public int getGreedyAction(double[][] screen, int actSize) {
 		INDArray inputTemp = Nd4j.create(screen);
-		inputTemp = inputTemp.reshape(new int[] {1,1,10,12});
+		inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 		INDArray output = model.output(inputTemp);
 		double maxVal = output.getDouble(0);
 		int actionT = 0;
@@ -180,7 +201,7 @@ public class DQN implements EnviromentOptimization{
 	
 	public double getGreedyValue(double[][] screen, int actSize) {
 		INDArray inputTemp = Nd4j.create(screen);
-		inputTemp = inputTemp.reshape(new int[] {1,1,10,12});
+		inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 		INDArray output = model.output(inputTemp);
 		double maxVal = output.getDouble(0);
 		
@@ -199,7 +220,7 @@ public class DQN implements EnviromentOptimization{
 	public int getGreedyActionP(double[][] screen, int actSize) {
 		System.out.println("Size : " + screen.length +  "  :: "  + screen[0].length );
 		INDArray inputTemp = Nd4j.create(screen);
-		inputTemp = inputTemp.reshape(new int[] {1,1,10,12});
+		inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 		INDArray output = model.output(inputTemp);
 		double maxVal = output.getDouble(0);
 		System.out.println("La acción 0 : " + maxVal);
@@ -214,7 +235,7 @@ public class DQN implements EnviromentOptimization{
 		return actionT;
 	}
 	
-	public void printResult(Enviroment env, Model model, Map<String, Object> parameters) {
+	public void printResult(Enviroment env, Map<String, Object> parameters) {
 		ScreenBasedEnviroment sEnv;
 		try {
 			sEnv = checkValidity(env);
@@ -238,7 +259,7 @@ public class DQN implements EnviromentOptimization{
 		
 	}
 	
-	public int getResult(Enviroment env, Model model, Map<String, Object> parameters) {
+	public int getResult(Enviroment env, Map<String, Object> parameters) {
 		ScreenBasedEnviroment sEnv;
 		int total=0;
 		try {

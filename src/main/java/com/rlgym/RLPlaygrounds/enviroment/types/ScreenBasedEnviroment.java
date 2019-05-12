@@ -17,8 +17,6 @@ public interface ScreenBasedEnviroment extends Enviroment {
 	public boolean isEndState(Object... data);
 	
 	//Simulative Enviroment Functions
-	public void resetWorld();
-	public void doAction(int action);
 	public double[][] doActionS(int action) throws Exception;//Simulation
 	
 	//Visual Functions

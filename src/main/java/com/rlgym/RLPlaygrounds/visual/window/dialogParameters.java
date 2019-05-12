@@ -13,30 +13,38 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeListener;
+
+import com.rlgym.RLPlaygrounds.configuration.config;
+
+import javax.swing.event.ChangeEvent;
 
 public class dialogParameters extends JDialog {
 
 	/**
 	 * Create the dialog.
 	 */
+	
+	JSlider slider,sldEpoch,sldDiscFactor,sldLearningRate;
+	JLabel lblEpochs, lblDiscountFactor,lblLearningRate,lblExplorationDiscount;
 	public dialogParameters() {
 		setBounds(100, 100, 522, 394);
 		getContentPane().setLayout(null);
 		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setBounds(0, 322, 506, 33);
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane);
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.setBounds(0, 322, 506, 33);
+			buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPanel);
 			{
 				JButton okButton = new JButton("OK");
 				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
+				buttonPanel.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+				buttonPanel.add(cancelButton);
 			}
 		}
 		
@@ -44,68 +52,75 @@ public class dialogParameters extends JDialog {
 		tabbedPane.setBounds(0, 0, 506, 322);
 		getContentPane().add(tabbedPane);
 		
-		JPanel panel_2 = new JPanel();
-		tabbedPane.addTab("General", null, panel_2, null);
-		panel_2.setLayout(null);
+		JPanel parGeneralPan = new JPanel();
+		tabbedPane.addTab("General", null, parGeneralPan, null);
+		parGeneralPan.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Epochs");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(10, 11, 200, 14);
-		panel_2.add(lblNewLabel);
+		lblEpochs = new JLabel("Epochs");
+		lblEpochs.setHorizontalAlignment(SwingConstants.CENTER);
+		lblEpochs.setBounds(10, 11, 200, 14);
+		parGeneralPan.add(lblEpochs);
 		
-		JSlider slider_2 = new JSlider();
-		slider_2.setBounds(10, 30, 200, 26);
-		panel_2.add(slider_2);
+		sldEpoch = new JSlider();
+		sldEpoch.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.parameters.put("epochs",sldEpoch.getValue());
+				lblEpochs.setText("Epoch (" + String.valueOf(config.parameters.get("epochs"))+ ")");
+			}
+		});
+		sldEpoch.setBounds(10, 30, 200, 26);
+		parGeneralPan.add(sldEpoch);
 		
-		JSlider slider_3 = new JSlider();
-		slider_3.setBounds(291, 30, 200, 26);
-		panel_2.add(slider_3);
+		sldDiscFactor = new JSlider();
+		sldDiscFactor.setBounds(291, 30, 200, 26);
+		parGeneralPan.add(sldDiscFactor);
 		
-		JLabel lblDiscountFactor = new JLabel("Discount Factor");
+		lblDiscountFactor = new JLabel("Discount Factor");
 		lblDiscountFactor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDiscountFactor.setBounds(291, 11, 200, 14);
-		panel_2.add(lblDiscountFactor);
+		parGeneralPan.add(lblDiscountFactor);
 		
-		JLabel lblExploringRate = new JLabel("Exploring Rate");
-		lblExploringRate.setHorizontalAlignment(SwingConstants.CENTER);
-		lblExploringRate.setBounds(10, 67, 200, 14);
-		panel_2.add(lblExploringRate);
-		
-		JSlider slider_4 = new JSlider();
-		slider_4.setBounds(10, 92, 200, 26);
-		panel_2.add(slider_4);
-		
-		JLabel lblLearningRate = new JLabel("Learning Rate");
+		lblLearningRate = new JLabel("Learning Rate");
 		lblLearningRate.setHorizontalAlignment(SwingConstants.CENTER);
 		lblLearningRate.setBounds(291, 67, 200, 14);
-		panel_2.add(lblLearningRate);
+		parGeneralPan.add(lblLearningRate);
 		
-		JSlider slider_5 = new JSlider();
-		slider_5.setBounds(291, 92, 200, 26);
-		panel_2.add(slider_5);
+		sldLearningRate = new JSlider();
+		sldLearningRate.setBounds(291, 92, 200, 26);
+		parGeneralPan.add(sldLearningRate);
 		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Explore", null, panel, null);
-		panel.setLayout(null);
+		JPanel parExplorePanel = new JPanel();
+		tabbedPane.addTab("Explore", null, parExplorePanel, null);
+		parExplorePanel.setLayout(null);
 		
-		JLabel lblExplorationDiscount = new JLabel("Exploration Discount");
+		lblExplorationDiscount = new JLabel("Exploration Rate");
+		lblExplorationDiscount.setHorizontalAlignment(SwingConstants.CENTER);
 		lblExplorationDiscount.setBounds(10, 11, 200, 14);
-		panel.add(lblExplorationDiscount);
+		parExplorePanel.add(lblExplorationDiscount);
 		
-		JSlider slider = new JSlider();
+		slider = new JSlider();
 		slider.setBounds(10, 36, 200, 26);
-		panel.add(slider);
+		parExplorePanel.add(slider);
 		
-		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Rewards", null, panel_1, null);
-		panel_1.setLayout(null);
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(10, 98, 200, 20);
+		parExplorePanel.add(comboBox);
+		
+		JLabel lblExploringDecayFunction = new JLabel("Exploring Decay Function");
+		lblExploringDecayFunction.setBounds(10, 73, 200, 14);
+		parExplorePanel.add(lblExploringDecayFunction);
+		
+		JPanel parRewardPanel = new JPanel();
+		tabbedPane.addTab("Rewards", null, parRewardPanel, null);
+		parRewardPanel.setLayout(null);
 		
 		JLabel lblRewardOnStep = new JLabel("Reward on Step");
+		lblRewardOnStep.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRewardOnStep.setBounds(10, 11, 200, 14);
-		panel_1.add(lblRewardOnStep);
+		parRewardPanel.add(lblRewardOnStep);
 		
-		JSlider slider_1 = new JSlider();
-		slider_1.setBounds(10, 36, 200, 26);
-		panel_1.add(slider_1);
+		JSlider sldRewardpStep = new JSlider();
+		sldRewardpStep.setBounds(10, 36, 200, 26);
+		parRewardPanel.add(sldRewardpStep);
 	}
 }

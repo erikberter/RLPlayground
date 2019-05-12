@@ -7,6 +7,9 @@ public class GridWorld implements StaticEnviroment{
 	double[][] gridWorldRewards;
 	double reward_OOB;
 	int size_X, size_Y;
+	
+	int state;
+	
 	public GridWorld() {
 		this.gridWorldRewards = new double[][]{
 		                         {0,-1,0,0,0},
@@ -28,56 +31,24 @@ public class GridWorld implements StaticEnviroment{
 		this.gridWorldRewards = gridWorldRewards;
 		this.reward_OOB = reward_OOB;
 	}
-	
-	public void resetWorld() {
-		// TODO Auto-generated method stub
-		
-	}
-	public int getStateNumberSize(){
-		return 1;
-	}
 
-	public double getRewardFromState(int[] state) {
-		int[] realState = fromIntStateToRealState(state);
+	public double getRewardFromState(int stateT) {
+		int[] realState = fromIntStateToRealState(stateT);
 		if(realState[0]==0 || realState[0]==this.size_X-1 || realState[1]==0 || realState[1]==this.size_Y-1)
 			return -1;
 		return this.gridWorldRewards[realState[0]-1][realState[1]-1];
 	}
 
-
-
-
-	public int[] fromIntStateToRealState(int[] state) {
-		int[] realState = new int[2];
-		
-		realState[0] = state[0]%this.size_X;
-		realState[1] = (state[0]-realState[0])/this.size_X;
-		return realState;
-	}
-
-	public int[] getResetState() {
-		return new int[]{1+this.size_X}; //default reset State
-	}
-
-	public boolean isEndState(int[] state) {
-		if(getRewardFromState(state)==0)
+	public boolean isEndState() {
+		if(getRewardFromState(this.state)==0)
 			return false;
 		return true;
 	}
-
-	public int[] getStateFromStateAction(int[] currentState, int newAction) {
-		switch(newAction) {
-			case 0:
-				return new int[]{currentState[0]-1};
-			case 1:
-				return new int[]{currentState[0]+1};
-			case 2:
-				return new int[]{currentState[0]-this.size_X};
-			case 3:
-				return new int[]{currentState[0]+this.size_X};
-			default:
-				return new int[]{-1};
-		}
+	
+	public boolean isEndState(int state) {
+		if(getRewardFromState(state)==0)
+			return false;
+		return true;
 	}
 
 	public int getStateNumber() {
@@ -89,13 +60,74 @@ public class GridWorld implements StaticEnviroment{
 	}
 
 	public void doAction(int action) {
+		switch(action) {
+			case 0:
+				this.state--;
+				break;
+			case 1:
+				this.state++;
+				break;
+			case 2:
+				this.state-=this.size_X;
+				break;
+			case 3:
+				this.state+=this.size_X;
+				break;
+			default:
+				//TODO Add error over action
+		}
+		
+	}
+	
+	public int doActionS(int action) {
+		switch(action) {
+		case 0:
+			return this.state-1;
+		case 1:
+			return this.state+1;
+		case 2:
+			return this.state-this.size_X;
+		case 3:
+			return this.state+this.size_X;
+		default:
+			//TODO Add error over action
+		}
+		return -1;
+	}
+
+	public void printMap(int state) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void printMap(int[] state) {
-		// TODO Auto-generated method stub
-		
+	public void resetWorld() {
+		this.state = this.size_X+1;
 	}
+
+
+	public int[] fromIntStateToRealState(int state) {
+		return new int[] {state%this.size_X,(state-(state%this.size_X))/this.size_X};
+	}
+
+	public int fromRealStateToIntState(int[] state) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public double getRewardFromState() {
+		int[] realState = fromIntStateToRealState(this.state);
+		if(realState[0]==0 || realState[0]==this.size_X-1 || realState[1]==0 || realState[1]==this.size_Y-1)
+			return -1;
+		return this.gridWorldRewards[realState[0]-1][realState[1]-1];
+	}
+
+
+
+	
+
+	public int getCurrentState() {
+		return this.state;
+	}
+
 
 }
