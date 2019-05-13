@@ -226,7 +226,6 @@ public class mainFrame {
 		lblRewardOnStep.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRewardOnStep.setBounds(10, 180, 140, 14);
 		frame.getContentPane().add(lblRewardOnStep);
-		
 		final JSlider slider_4 = new JSlider();
 		slider_4.setMaximum(1000);
 		slider_4.addChangeListener(new ChangeListener() {

@@ -3,6 +3,7 @@ package com.rlgym.RLPlaygrounds.agent;
 
 import java.util.Map;
 
+import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
 import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.*;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.categories.*;
@@ -38,7 +39,7 @@ public class Agent {
 	
 	public void setOptimization(String optimizatorName){
 		if(optimizatorName.equals("Qsa Optimization"))
-			this.optimizer = new QLearning((StaticEnviroment) this.enviroment);
+			this.optimizer = new QLearning((StaticEnviroment) this.enviroment).setExplorationFunction(explorationFunction.CONSTANT);
 		else if(optimizatorName.equals("DQN"))
 			this.optimizer = new DQN();
 	}

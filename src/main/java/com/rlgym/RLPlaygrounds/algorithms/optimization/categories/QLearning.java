@@ -6,6 +6,9 @@ import java.util.Map;
 import com.rlgym.RLPlaygrounds.enviroment.*;
 import com.rlgym.RLPlaygrounds.enviroment.types.StaticEnviroment;
 import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
+import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationAlgorithms;
+import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
+import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.StateOptimization;
 
 public class QLearning implements StateOptimization{
@@ -13,7 +16,8 @@ public class QLearning implements StateOptimization{
 	// TODO inicializar las variables
 	
 	double[][] QsaMatrix;
-	private int stateSize, actSize, explorationFuncType;
+	private int stateSize, actSize;
+	private explorationFunction expFunction;
 	
 	
 	
@@ -22,11 +26,11 @@ public class QLearning implements StateOptimization{
 		this.stateSize = env.getStateNumber();
 		this.actSize = env.getActionNumber();
 		this.QsaMatrix = new double[stateSize][actSize];
-		this.explorationFuncType = 0;
 	}
 	
-	public void setExplorationFuncType(int explorationFuncType){
-		this.explorationFuncType = explorationFuncType;
+	public QLearning setExplorationFunction(explorationFunction expFunction){
+		this.expFunction =  expFunction;
+		return this;
 	}
 	
 	private StaticEnviroment checkValidity(Enviroment env) throws Exception{
@@ -50,7 +54,7 @@ public class QLearning implements StateOptimization{
 			sEnv.resetWorld();
 			int newAction, nextState;
 			for(int statei = 0; !sEnv.isEndState(); statei++) {
-				if(Math.random() < getExplorationRate( dataExchange.getDFMap(parameters,"exploring_rate"),statei)) 
+				if(Math.random() < explorationAlgorithms.getExplorationRate(this.expFunction, dataExchange.getDFMap(parameters,"exploring_rate"),statei)) 
 					newAction = getRandomAction(this.actSize);
 				else 
 					newAction = getGreedyAction(sEnv.getCurrentState(), this.actSize);
@@ -85,20 +89,6 @@ public class QLearning implements StateOptimization{
 		return posibleAct.get((int)(Math.random()*posibleAct.size()));
 	}
 
-	// TODO Cambiar las funciones de Exploracion a una zona propia
-	public double getExplorationRate(double expRate, int t){
-		switch(this.explorationFuncType){
-		case 0:
-			return expRate;
-		case 1:
-			return expRate*(1/(Math.log(t)));
-		case 2: 
-			return Math.pow(expRate,t);
-		default:
-			return expRate;
-		}
-	}
-	
 	public int getRandomAction(int actSize) {
 		return (int)(Math.random()*(actSize));
 	}
