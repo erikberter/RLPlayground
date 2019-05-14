@@ -2,7 +2,7 @@ package com.rlgym.RLPlaygrounds.algorithms.miscelanea;
 
 import java.util.Map;
 
-public class dataExchange {
+public class helpers {
 
 	public static double getDFMap(Map<String, Object> map, String name) {
 		return (Double) map.get(name);

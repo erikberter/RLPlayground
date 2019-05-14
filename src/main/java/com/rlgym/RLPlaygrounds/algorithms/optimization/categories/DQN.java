@@ -22,7 +22,7 @@ import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.learning.config.RmsProp;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
-import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.EnviromentOptimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
@@ -31,7 +31,7 @@ import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
 
 import com.rlgym.RLPlaygrounds.configuration.config;
 
-public class DQN implements EnviromentOptimization{
+public class DQN extends GenericOptimizator implements EnviromentOptimization{
 
 	private MultiLayerNetwork model;
 	
@@ -82,18 +82,18 @@ public class DQN implements EnviromentOptimization{
 		//La conversión Objeto -> tipo está teniendo que ser por Objeto->String->Tipo y ademas de un mapa
 		//Para reducir este tiempo se cogerán las variables al comienzo de la ejecución o cuando sea necesario
 		
-		this.seed = dataExchange.getIFMap(config.hiperParameters,"seed");
-		this.numInputs= dataExchange.getIFMap(config.hiperParameters,"numInputs");
-		this.numOutputs= dataExchange.getIFMap(config.hiperParameters,"numOutputs");
+		this.seed = helpers.getIFMap(config.hiperParameters,"seed");
+		this.numInputs= helpers.getIFMap(config.hiperParameters,"numInputs");
+		this.numOutputs= helpers.getIFMap(config.hiperParameters,"numOutputs");
 		
-		this.inputHeight = dataExchange.getIFMap(config.hiperParameters,"inputHeight");
-		this.inputWidth = dataExchange.getIFMap(config.hiperParameters,"inputWidth");
-		this.inputChannels = dataExchange.getIFMap(config.hiperParameters,"inputChannels");
+		this.inputHeight = helpers.getIFMap(config.hiperParameters,"inputHeight");
+		this.inputWidth = helpers.getIFMap(config.hiperParameters,"inputWidth");
+		this.inputChannels = helpers.getIFMap(config.hiperParameters,"inputChannels");
 		
-		this.updaterRate = dataExchange.getDFMap(config.hiperParameters,"updaterRate");
-		this.discountFactor = dataExchange.getDFMap(config.parameters,"discount_rate");
+		this.updaterRate = helpers.getDFMap(config.hiperParameters,"updaterRate");
+		this.discountFactor = helpers.getDFMap(config.parameters,"discount_rate");
 		
-		this.minibatch = dataExchange.getIFMap(config.hiperParameters,"minibatch");
+		this.minibatch = helpers.getIFMap(config.hiperParameters,"minibatch");
 	}
 	
 	
@@ -104,7 +104,7 @@ public class DQN implements EnviromentOptimization{
 			throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
 	}
 
-	public void minimizeEpochs(Enviroment env, Map<String, Object> parameters) {
+	public void minimizeEpochs(Enviroment env) {
 		
 		ScreenBasedEnviroment sEnv;
 		try {
@@ -122,16 +122,16 @@ public class DQN implements EnviromentOptimization{
 			int newAction;
 			sEnv.resetWorld();
 			
-			if(i%10==0) printResult(sEnv, parameters);
+			if(i%10==0) printResult(sEnv);
 			if(i%10==0) System.out.println("Estamos en el momento: " + i);
 			if(i%500==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
-			if(i%20==0) System.out.println("Estamos en el " + i + " : " + getResult(sEnv, parameters));
+			if(i%20==0) System.out.println("Estamos en el " + i + " : " + getResult(sEnv));
 			
 			
 			while(!sEnv.isEndState()) {
 				
 				
-				if(Math.random() < dataExchange.getDFMap(parameters,"exploration_rate"))
+				if(Math.random() < helpers.getDFMap(config.parameters,"exploration_rate"))
 					newAction = getRandomAction(sEnv.getActionNumber()) ;
 				else newAction = getGreedyAction(sEnv.getStateMap(), sEnv.getActionNumber());
 				//Creating episode and doing action in game
@@ -179,7 +179,7 @@ public class DQN implements EnviromentOptimization{
 		
 	}
 
-	public void minimizeLoss(Enviroment env,  Map<String, Object> parameters) {
+	public void minimizeLoss(Enviroment env) {
 		// TODO Hacer la minimizeLoss
 		
 	}
@@ -235,7 +235,7 @@ public class DQN implements EnviromentOptimization{
 		return actionT;
 	}
 	
-	public void printResult(Enviroment env, Map<String, Object> parameters) {
+	public void printResult(Enviroment env) {
 		ScreenBasedEnviroment sEnv;
 		try {
 			sEnv = checkValidity(env);
@@ -259,7 +259,7 @@ public class DQN implements EnviromentOptimization{
 		
 	}
 	
-	public int getResult(Enviroment env, Map<String, Object> parameters) {
+	public int getResult(Enviroment env) {
 		ScreenBasedEnviroment sEnv;
 		int total=0;
 		try {

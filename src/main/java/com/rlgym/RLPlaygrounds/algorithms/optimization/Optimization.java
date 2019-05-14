@@ -8,13 +8,12 @@ import com.rlgym.RLPlaygrounds.enviroment.*;
 
 public interface Optimization {
 
-	public Optimization setExplorationFunction(explorationFunction expFunction);
 	
-	public void minimizeEpochs(Enviroment env, Map<String, Object> parameters);
-	public void minimizeLoss(Enviroment env, Map<String, Object> parameters);
+	public void minimizeEpochs(Enviroment env);
+	public void minimizeLoss(Enviroment env);
 	
-	int getRandomAction(int actSize);
+	int getRandomAction(int actSize); // TODO añadir public o private o algo
 	
-	public void printResult(Enviroment env,  Map<String, Object> parameters);
+	public void printResult(Enviroment env);
 	
 }

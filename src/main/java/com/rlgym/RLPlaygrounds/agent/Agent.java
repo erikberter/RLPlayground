@@ -4,13 +4,13 @@ package com.rlgym.RLPlaygrounds.agent;
 import java.util.Map;
 
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
-import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.*;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.categories.*;
 import com.rlgym.RLPlaygrounds.configuration.config;
 import com.rlgym.RLPlaygrounds.enviroment.*;
 import com.rlgym.RLPlaygrounds.enviroment.games.*;
-import com.rlgym.RLPlaygrounds.enviroment.types.StaticEnviroment;
+import com.rlgym.RLPlaygrounds.enviroment.types.StateBasedEnviroment;
 
 public class Agent {
 
@@ -18,42 +18,50 @@ public class Agent {
 	Optimization optimizer;
 	
 	
-	Map<String, Object> parameters, hiperParameters;
-	
-	public Agent(String envName,String optimizatorName, Map<String, Object> parameters, Map<String, Object> hiperParameters) {
-		
-		this.parameters = parameters;
-		this.hiperParameters = hiperParameters;
-		setEnviroment(envName);
-		setOptimization(optimizatorName);
-	}
-	
-	public void setEnviroment(String envName){
-		if(envName.equals("GridWorld"))
-			this.enviroment = new GridWorld();
-		else if(envName.equals("AppleFall"))
-			this.enviroment = new AppleFall(dataExchange.getIFMap(hiperParameters,"inputWidth"),
-					dataExchange.getIFMap(hiperParameters,"inputHeight"));
+	public Agent() {
 		
 	}
 	
-	public void setOptimization(String optimizatorName){
-		if(optimizatorName.equals("Qsa Optimization"))
-			this.optimizer = new QLearning((StaticEnviroment) this.enviroment).setExplorationFunction(explorationFunction.CONSTANT);
-		else if(optimizatorName.equals("DQN"))
+	public Agent setEnviroment(GameName envName){
+		switch(envName){
+			case APPLEFALL:
+				this.enviroment = new AppleFall(helpers.getIFMap(config.hiperParameters,"inputWidth"),
+						helpers.getIFMap(config.hiperParameters,"inputHeight"));
+				break;
+			case GRIDWORLD:
+				this.enviroment = new GridWorld();
+				break;
+			default:
+				System.err.println("No se ha encontrado la clase dentro del enum");// TODO cambiar el error
+		}
+		return this;
+		
+	}
+	
+	public Agent setOptimization(OptimizationNames optimizatorName){
+		switch(optimizatorName){
+		case DQN:
+			this.optimizer = new QLearning((StateBasedEnviroment) this.enviroment).setExplorationFunction(explorationFunction.CONSTANT);
+			break;
+		case QLearning:
 			this.optimizer = new DQN();
+			break;
+		default:
+			System.err.println("No se ha encontrado la clase dentro del enum"); //Cambiar el error
+		}
+		return this;
 	}
 	
 	
 	
 	public void OptimizeAgent() {
 		//Check if is valid the combination
-		this.optimizer.minimizeEpochs(this.enviroment,  this.parameters);
+		this.optimizer.minimizeEpochs(this.enviroment);
 		System.out.println("Minimizada");
 	}
 	
 	public void printResult() {
-		this.optimizer.printResult(this.enviroment,  this.parameters);
+		this.optimizer.printResult(this.enviroment);
 	}
 	
 }

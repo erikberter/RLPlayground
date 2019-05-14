@@ -4,45 +4,54 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.rlgym.RLPlaygrounds.enviroment.*;
-import com.rlgym.RLPlaygrounds.enviroment.types.StaticEnviroment;
-import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
+import com.rlgym.RLPlaygrounds.enviroment.types.StateBasedEnviroment;
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationAlgorithms;
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.StateOptimization;
+import com.rlgym.RLPlaygrounds.configuration.config;
 
-public class QLearning implements StateOptimization{
+public class QLearning extends GenericOptimizator implements StateOptimization{
 	
 	// TODO inicializar las variables
 	
 	double[][] QsaMatrix;
 	private int stateSize, actSize;
-	private explorationFunction expFunction;
 	
 	
-	
-	public QLearning(StaticEnviroment env) {
-		
-		this.stateSize = env.getStateNumber();
-		this.actSize = env.getActionNumber();
-		this.QsaMatrix = new double[stateSize][actSize];
-	}
-	
-	public QLearning setExplorationFunction(explorationFunction expFunction){
-		this.expFunction =  expFunction;
-		return this;
-	}
-	
-	private StaticEnviroment checkValidity(Enviroment env) throws Exception{
-		if(env instanceof StaticEnviroment)
-			return (StaticEnviroment) env;
+	private StateBasedEnviroment checkValidity(Enviroment env) throws Exception{
+		if(env instanceof StateBasedEnviroment)
+			return (StateBasedEnviroment) env;
 		else
 			throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
 	}
 	
-	public void minimizeEpochs(Enviroment env, Map<String, Object> parameters) {
+	public QLearning(Enviroment env) {
 		
-		StaticEnviroment sEnv;
+		StateBasedEnviroment sEnv = null;
+		
+		try{
+			checkValidity(env);
+			
+		}catch(Exception e){
+			System.err.println(e.getMessage());
+			return;
+		}
+		
+		
+		this.stateSize = sEnv.getStateNumber();
+		this.actSize = sEnv.getActionNumber();
+		this.QsaMatrix = new double[stateSize][actSize];
+	}
+	
+	
+	
+	
+	
+	public void minimizeEpochs(Enviroment env) {
+		
+		StateBasedEnviroment sEnv;
 		try {
 			sEnv = checkValidity(env);
 		} catch (Exception e) {
@@ -50,20 +59,20 @@ public class QLearning implements StateOptimization{
 			return;
 		}
 		
-		for(int epochi = 0; epochi < dataExchange.getIFMap(parameters,"epochs"); epochi++) {
+		for(int epochi = 0; epochi < helpers.getIFMap(config.parameters,"epochs"); epochi++) {
 			sEnv.resetWorld();
 			int newAction, nextState;
 			for(int statei = 0; !sEnv.isEndState(); statei++) {
-				if(Math.random() < explorationAlgorithms.getExplorationRate(this.expFunction, dataExchange.getDFMap(parameters,"exploring_rate"),statei)) 
+				if(Math.random() < explorationAlgorithms.getExplorationRate(this.expFunction, helpers.getDFMap(config.parameters,"exploring_rate"),statei)) 
 					newAction = getRandomAction(this.actSize);
 				else 
 					newAction = getGreedyAction(sEnv.getCurrentState(), this.actSize);
 				nextState = sEnv.doActionS(newAction);
-				double reward = sEnv.getRewardFromState(nextState) + dataExchange.getDFMap(parameters,"reward_on_step");
+				double reward = sEnv.getRewardFromState(nextState) + helpers.getDFMap(config.parameters,"reward_on_step");
 				double maxQsaValue = this.QsaMatrix[nextState][getGreedyAction(nextState, this.actSize)];
 				
-				this.QsaMatrix[sEnv.getCurrentState()][newAction] = (1-dataExchange.getDFMap(parameters,"learning_rate"))*this.QsaMatrix[sEnv.getCurrentState()][newAction];
-				this.QsaMatrix[sEnv.getCurrentState()][newAction] += dataExchange.getDFMap(parameters,"learning_rate")*(reward + (dataExchange.getDFMap(parameters,"discount_factor")*maxQsaValue));
+				this.QsaMatrix[sEnv.getCurrentState()][newAction] = (1-helpers.getDFMap(config.parameters,"learning_rate"))*this.QsaMatrix[sEnv.getCurrentState()][newAction];
+				this.QsaMatrix[sEnv.getCurrentState()][newAction] += helpers.getDFMap(config.parameters,"learning_rate")*(reward + (helpers.getDFMap(config.parameters,"discount_factor")*maxQsaValue));
 				sEnv.doAction(newAction);
 			}
 		}
@@ -93,15 +102,15 @@ public class QLearning implements StateOptimization{
 		return (int)(Math.random()*(actSize));
 	}
 
-	public void minimizeLoss(Enviroment env,Map<String, Object> parameters) {
+	public void minimizeLoss(Enviroment env) {
 		// TODO Hacer la minimize Loss
 		
 	}
 
 
-	public void printResult(Enviroment env,Map<String, Object> parameters) {
+	public void printResult(Enviroment env) {
 		
-		StaticEnviroment sEnv;
+		StateBasedEnviroment sEnv;
 		try {
 			sEnv = checkValidity(env);
 		} catch (Exception e) {

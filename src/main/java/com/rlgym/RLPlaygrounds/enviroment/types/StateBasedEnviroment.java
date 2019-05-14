@@ -2,7 +2,7 @@ package com.rlgym.RLPlaygrounds.enviroment.types;
 
 import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
 
-public interface StaticEnviroment extends Enviroment {
+public interface StateBasedEnviroment extends Enviroment {
 	
 	//Comunication functions
 	public int[] fromIntStateToRealState(int state);

@@ -3,7 +3,7 @@ package com.rlgym.RLPlaygrounds.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rlgym.RLPlaygrounds.algorithms.miscelanea.dataExchange;
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 
 public class config extends Throwable{
 
