@@ -22,6 +22,7 @@ import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.learning.config.RmsProp;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
+import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
 import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.EnviromentOptimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
@@ -31,7 +32,7 @@ import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
 
 import com.rlgym.RLPlaygrounds.configuration.config;
 
-public class DQN extends GenericOptimizator implements EnviromentOptimization{
+public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 
 	private MultiLayerNetwork model;
 	
@@ -41,6 +42,7 @@ public class DQN extends GenericOptimizator implements EnviromentOptimization{
 	private double updaterRate, discountFactor;
 	
 	private int minibatch;
+
 	
 	
 	
@@ -137,7 +139,7 @@ public class DQN extends GenericOptimizator implements EnviromentOptimization{
 				//Creating episode and doing action in game
 				
 				//Each episode is in the form (s_t,a,rwd,s_{t+1},endState?)
-				ArrayList<double[][]> tempEpisode = new ArrayList<double[][]>(5);
+				ArrayList<double[][]> tempEpisode = new ArrayList<double[][]>();
 				tempEpisode.add(sEnv.getStateMap());
 				tempEpisode.add(new double[][] {{newAction}});
 				sEnv.doAction(newAction);
@@ -165,7 +167,6 @@ public class DQN extends GenericOptimizator implements EnviromentOptimization{
 						inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 						INDArray yJT = this.model.output(inputTemp);//Q(s;0)
 						double tempCoord = yJT.getDouble(actionT);//Q(s,a;0)
-						//yJT.putScalar(new int[] {actionT},tempCoord+yJ);//Q(s,a;0)+y_j
 						yJT.putScalar(new int[] {actionT},yJ);//Q(s,a;0)+y_j
 						DataSet ds = new DataSet(inputTemp, yJT);
 						this.model.fit(ds);

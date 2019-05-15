@@ -3,6 +3,7 @@ package com.rlgym.RLPlaygrounds.visual.window;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -15,7 +16,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 
+import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
 import com.rlgym.RLPlaygrounds.configuration.config;
+import com.rlgym.RLPlaygrounds.enviroment.games.GameName;
 
 import javax.swing.event.ChangeEvent;
 
@@ -25,6 +28,7 @@ public class dialogParameters extends JDialog {
 	 * Create the dialog.
 	 */
 	
+	// TODO Cambiar las funciones de las barras a la que esta en config para evitar errores
 	JSlider slider,sldEpoch,sldDiscFactor,sldLearningRate;
 	JLabel lblEpochs, lblDiscountFactor,lblLearningRate,lblExplorationDiscount;
 	public dialogParameters() {
@@ -72,6 +76,12 @@ public class dialogParameters extends JDialog {
 		parGeneralPan.add(sldEpoch);
 		
 		sldDiscFactor = new JSlider();
+		sldDiscFactor.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.parameters.put("discount_factor",sldDiscFactor.getValue());
+				lblDiscountFactor.setText("Discount Factor (" + String.valueOf(config.parameters.get("discount_factor"))+ ")");
+			}
+		});
 		sldDiscFactor.setBounds(291, 30, 200, 26);
 		parGeneralPan.add(sldDiscFactor);
 		
@@ -86,6 +96,12 @@ public class dialogParameters extends JDialog {
 		parGeneralPan.add(lblLearningRate);
 		
 		sldLearningRate = new JSlider();
+		sldLearningRate.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.parameters.put("learning_rate",sldLearningRate.getValue());
+				lblDiscountFactor.setText("Learning Rate (" + String.valueOf(config.parameters.get("learning_rate"))+ ")");
+			}
+		});
 		sldLearningRate.setBounds(291, 92, 200, 26);
 		parGeneralPan.add(sldLearningRate);
 		
@@ -104,6 +120,9 @@ public class dialogParameters extends JDialog {
 		
 		JComboBox comboBox = new JComboBox();
 		comboBox.setBounds(10, 98, 200, 20);
+		comboBox.setModel(new DefaultComboBoxModel(new explorationFunction[] {
+				explorationFunction.CONSTANT,explorationFunction.CONSTANT_DECAY,
+				explorationFunction.EXPONENTIAL_DECAY, explorationFunction.LINEAR_DECAY_WITH_MINIMUM }));
 		parExplorePanel.add(comboBox);
 		
 		JLabel lblExploringDecayFunction = new JLabel("Exploring Decay Function");

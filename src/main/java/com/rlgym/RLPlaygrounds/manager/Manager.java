@@ -1,4 +1,4 @@
-package com.rlgym.RLPlaygrounds.agent;
+package com.rlgym.RLPlaygrounds.manager;
 
 
 import java.util.Map;
@@ -12,17 +12,17 @@ import com.rlgym.RLPlaygrounds.enviroment.*;
 import com.rlgym.RLPlaygrounds.enviroment.games.*;
 import com.rlgym.RLPlaygrounds.enviroment.types.StateBasedEnviroment;
 
-public class Agent {
+public class Manager {
 
 	Enviroment enviroment;
-	Optimization optimizer;
+	GenericOptimizator optimizer;
 	
 	
-	public Agent() {
+	public Manager() {
 		
 	}
 	
-	public Agent setEnviroment(GameName envName){
+	public Manager setEnviroment(GameName envName){
 		switch(envName){
 			case APPLEFALL:
 				this.enviroment = new AppleFall(helpers.getIFMap(config.hiperParameters,"inputWidth"),
@@ -38,16 +38,16 @@ public class Agent {
 		
 	}
 	
-	public Agent setOptimization(OptimizationNames optimizatorName){
+	public Manager setOptimization(OptimizationNames optimizatorName){
 		switch(optimizatorName){
-		case DQN:
-			this.optimizer = new QLearning((StateBasedEnviroment) this.enviroment).setExplorationFunction(explorationFunction.CONSTANT);
-			break;
-		case QLearning:
-			this.optimizer = new DQN();
-			break;
-		default:
-			System.err.println("No se ha encontrado la clase dentro del enum"); //Cambiar el error
+			case QLearning:
+				this.optimizer = new QLearning(this.enviroment).setExplorationFunction(explorationFunction.CONSTANT);
+				break;
+			case DQN:
+				this.optimizer = new DQN();
+				break;
+			default:
+				System.err.println("No se ha encontrado la clase dentro del enum"); //Cambiar el error
 		}
 		return this;
 	}

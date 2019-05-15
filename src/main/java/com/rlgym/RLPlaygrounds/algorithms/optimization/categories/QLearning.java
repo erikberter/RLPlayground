@@ -23,29 +23,26 @@ public class QLearning extends GenericOptimizator implements StateOptimization{
 	private StateBasedEnviroment checkValidity(Enviroment env) throws Exception{
 		if(env instanceof StateBasedEnviroment)
 			return (StateBasedEnviroment) env;
-		else
-			throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
+		else {
+			
+			throw new Exception("The enviroment type sent to minimizeEpochs is not Static, it is ");
+		}
 	}
 	
 	public QLearning(Enviroment env) {
-		
 		StateBasedEnviroment sEnv = null;
-		
 		try{
-			checkValidity(env);
+			sEnv = checkValidity(env);
 			
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 			return;
 		}
 		
-		
 		this.stateSize = sEnv.getStateNumber();
 		this.actSize = sEnv.getActionNumber();
 		this.QsaMatrix = new double[stateSize][actSize];
 	}
-	
-	
 	
 	
 	
