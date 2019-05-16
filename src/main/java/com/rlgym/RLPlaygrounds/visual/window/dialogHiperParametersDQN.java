@@ -26,10 +26,16 @@ public class dialogHiperParametersDQN extends JDialog {
 	private JTextField textField_1;
 	private JTextField textField_2;
 
+	JLabel lblUpdaterRate,lblUpdater, lblMinibatch,lblHeight, lblChannels, lblSeed, 
+		lblTrainingMethod, lblRewardOnStep, lblWidth;
+	JSlider updateRateSLD, RewardOnStepSLD, MinibatchSLd;
+		
 	/**
 	 * Create the dialog.
 	 */
 	public dialogHiperParametersDQN() {
+		setTitle("hiperParameters Configuration");
+		setResizable(false);
 		setBounds(100, 100, 522, 394);
 		getContentPane().setLayout(null);
 		{
@@ -59,7 +65,7 @@ public class dialogHiperParametersDQN extends JDialog {
 		panel_2.setLayout(null);
 		
 
-		final JLabel lblSeed = new JLabel("Seed");
+		lblSeed = new JLabel("Seed");
 		lblSeed.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSeed.setBounds(291, 11, 200, 14);
 		panel_2.add(lblSeed);
@@ -77,12 +83,12 @@ public class dialogHiperParametersDQN extends JDialog {
 		rdbtTrainML.setBounds(10, 30, 200, 23);
 		panel_2.add(rdbtTrainML);
 		
-		JLabel lblTrainingMethod = new JLabel("Training Method");
+		lblTrainingMethod = new JLabel("Training Method");
 		lblTrainingMethod.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTrainingMethod.setBounds(10, 11, 200, 14);
 		panel_2.add(lblTrainingMethod);
 		
-		JLabel lblUpdater = new JLabel("Updater");
+		lblUpdater = new JLabel("Updater");
 		lblUpdater.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUpdater.setBounds(291, 56, 200, 14);
 		panel_2.add(lblUpdater);
@@ -91,45 +97,64 @@ public class dialogHiperParametersDQN extends JDialog {
 		comboBox.setBounds(291, 81, 200, 20);
 		panel_2.add(comboBox);
 		
-		JLabel lblUpdaterRate = new JLabel("Updater Rate");
+		lblUpdaterRate = new JLabel("Updater Rate");
 		lblUpdaterRate.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUpdaterRate.setBounds(291, 112, 200, 14);
 		panel_2.add(lblUpdaterRate);
 		
-		JSlider slider_2 = new JSlider();
-		slider_2.setBounds(291, 137, 200, 26);
-		panel_2.add(slider_2);
+		updateRateSLD = new JSlider();
+		updateRateSLD.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.hiperParameters.put("update_rate",updateRateSLD.getValue());
+				lblUpdaterRate.setText("Update Rate (" + String.valueOf(config.hiperParameters.get("learning_rate"))+ ")");
+			}
+		});
+		updateRateSLD.setBounds(291, 137, 200, 26);
+		panel_2.add(updateRateSLD);
 		
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Batches", null, panel, null);
 		panel.setLayout(null);
 		
-		JLabel lblExplorationDiscount = new JLabel("Minibatch");
-		lblExplorationDiscount.setHorizontalAlignment(SwingConstants.CENTER);
-		lblExplorationDiscount.setBounds(10, 11, 200, 14);
-		panel.add(lblExplorationDiscount);
+		lblMinibatch = new JLabel("Minibatch");
+		lblMinibatch.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMinibatch.setBounds(10, 11, 200, 14);
+		panel.add(lblMinibatch);
 		
-		JSlider slider = new JSlider();
-		slider.setBounds(10, 36, 200, 26);
-		panel.add(slider);
+		MinibatchSLd = new JSlider();
+		MinibatchSLd.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.hiperParameters.put("minibatch",MinibatchSLd.getValue());
+				lblMinibatch.setText("Minibatch (" + String.valueOf(config.hiperParameters.get("minibatch"))+ ")");
+			}
+		});
+		MinibatchSLd.setBounds(10, 36, 200, 26);
+		panel.add(MinibatchSLd);
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Rewards", null, panel_1, null);
 		panel_1.setLayout(null);
 		
-		JLabel lblRewardOnStep = new JLabel("Reward on Step");
+		lblRewardOnStep = new JLabel("Reward on Step");
+		lblRewardOnStep.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRewardOnStep.setBounds(10, 11, 200, 14);
 		panel_1.add(lblRewardOnStep);
 		
-		JSlider slider_1 = new JSlider();
-		slider_1.setBounds(10, 36, 200, 26);
-		panel_1.add(slider_1);
+		RewardOnStepSLD = new JSlider();
+		RewardOnStepSLD.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.hiperParameters.put("reward_on_step",RewardOnStepSLD.getValue());
+				lblRewardOnStep.setText("Reward on Step (" + String.valueOf(config.hiperParameters.get("reward_on_step"))+ ")");
+			}
+		});
+		RewardOnStepSLD.setBounds(10, 36, 200, 26);
+		panel_1.add(RewardOnStepSLD);
 		
 		JPanel panel_3 = new JPanel();
 		tabbedPane.addTab("Screen", null, panel_3, null);
 		panel_3.setLayout(null);
 		
-		JLabel lblWidth = new JLabel("Width");
+		lblWidth = new JLabel("Width");
 		lblWidth.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWidth.setBounds(10, 11, 86, 14);
 		panel_3.add(lblWidth);
@@ -139,7 +164,7 @@ public class dialogHiperParametersDQN extends JDialog {
 		panel_3.add(textField);
 		textField.setColumns(10);
 		
-		JLabel lblHeight = new JLabel("Height");
+		lblHeight = new JLabel("Height");
 		lblHeight.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHeight.setBounds(106, 11, 86, 14);
 		panel_3.add(lblHeight);
@@ -149,7 +174,7 @@ public class dialogHiperParametersDQN extends JDialog {
 		panel_3.add(textField_1);
 		textField_1.setColumns(10);
 		
-		JLabel lblChannels = new JLabel("Channels");
+		lblChannels = new JLabel("Channels");
 		lblChannels.setHorizontalAlignment(SwingConstants.CENTER);
 		lblChannels.setBounds(202, 11, 86, 14);
 		panel_3.add(lblChannels);

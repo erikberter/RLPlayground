@@ -177,11 +177,17 @@ public class mainFrame {
 		frmRlplayground.getContentPane().add(leftPanel);
 		leftPanel.setLayout(new GridLayout(2, 0, 0, 0));
 		
+		JScrollPane scrollPane = new JScrollPane();
+		leftPanel.add(scrollPane);
+		
 		JTextPane textPane = new JTextPane();
-		leftPanel.add(textPane);
+		scrollPane.setViewportView(textPane);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		leftPanel.add(scrollPane_1);
 		
 		JTree tree = new JTree();
-		leftPanel.add(tree);
+		scrollPane_1.setViewportView(tree);
 		tree.setModel(new DefaultTreeModel(
 			new DefaultMutableTreeNode("Model") {
 				{
@@ -190,18 +196,14 @@ public class mainFrame {
 					node_1 = new DefaultMutableTreeNode("Enviroments");
 						node_2 = new DefaultMutableTreeNode("Finite");
 							node_2.add(new DefaultMutableTreeNode("GridWorld"));
-							node_2.add(new DefaultMutableTreeNode("k-Arm Bandit"));
-							node_2.add(new DefaultMutableTreeNode("Fake Gambler"));
 						node_1.add(node_2);
 						node_2 = new DefaultMutableTreeNode("Infinite");
-							node_2.add(new DefaultMutableTreeNode("Pong"));
+							node_2.add(new DefaultMutableTreeNode("AppleFall"));
 						node_1.add(node_2);
 					add(node_1);
-					node_1 = new DefaultMutableTreeNode("Agents & Algorithms");
-						node_2 = new DefaultMutableTreeNode("MDP");
-							node_2.add(new DefaultMutableTreeNode("Qsa Optimization"));
-							node_2.add(new DefaultMutableTreeNode("Qsa r Opimization"));
-						node_1.add(node_2);
+					node_1 = new DefaultMutableTreeNode("Algorithms");
+						node_1.add(new DefaultMutableTreeNode("Qsa Optimization"));
+						node_1.add(new DefaultMutableTreeNode("DQN"));
 					add(node_1);
 				}
 			}

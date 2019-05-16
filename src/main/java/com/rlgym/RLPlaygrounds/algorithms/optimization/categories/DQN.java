@@ -33,20 +33,28 @@ import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
 import com.rlgym.RLPlaygrounds.configuration.config;
 
 public class DQN  extends GenericOptimizator implements EnviromentOptimization{
-
+	
+	//Neural Network Model
 	private MultiLayerNetwork model;
 	
+	//Neural Network input info
 	private int inputHeight, inputWidth, inputChannels;
 	
-	private int seed, numInputs, numOutputs;
+	//Neural network hiperparameters
+	private int seed, numInputs, numOutputs, minibatch;
 	private double updaterRate, discountFactor;
 	
-	private int minibatch;
-
+	//Information for global computing
+	private double allVal, kPoint;
 	
-	
+	// parameters 
+	private double explorationRate;
 	
 	public DQN() {
+		// TODO cambiar esto porque no me gusta
+		// Lo suyo sería que tuviera hecho de una forma más clara
+		this.allVal  = 0;
+		this.kPoint = 0;
 		initializeInternalVariablesFromConfig();
 		
 		// TODO Deberia hacer una funcion para networks personalizadas
@@ -81,18 +89,21 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 	}
 	
 	public void initializeInternalVariablesFromConfig() {
-		//La conversión Objeto -> tipo está teniendo que ser por Objeto->String->Tipo y ademas de un mapa
-		//Para reducir este tiempo se cogerán las variables al comienzo de la ejecución o cuando sea necesario
 		
+		// parameters
+		this.explorationRate = helpers.getDFMap(config.parameters,"exploration_rate");
+		
+		
+		// hiperparameters
 		this.seed = helpers.getIFMap(config.hiperParameters,"seed");
-		this.numInputs= helpers.getIFMap(config.hiperParameters,"numInputs");
-		this.numOutputs= helpers.getIFMap(config.hiperParameters,"numOutputs");
+		this.numInputs= helpers.getIFMap(config.hiperParameters,"n_input");
+		this.numOutputs= helpers.getIFMap(config.hiperParameters,"n_outputs");
 		
-		this.inputHeight = helpers.getIFMap(config.hiperParameters,"inputHeight");
-		this.inputWidth = helpers.getIFMap(config.hiperParameters,"inputWidth");
-		this.inputChannels = helpers.getIFMap(config.hiperParameters,"inputChannels");
+		this.inputHeight = helpers.getIFMap(config.hiperParameters,"input_height");
+		this.inputWidth = helpers.getIFMap(config.hiperParameters,"input_width");
+		this.inputChannels = helpers.getIFMap(config.hiperParameters,"input_channels");
 		
-		this.updaterRate = helpers.getDFMap(config.hiperParameters,"updaterRate");
+		this.updaterRate = helpers.getDFMap(config.hiperParameters,"updater_rate");
 		this.discountFactor = helpers.getDFMap(config.parameters,"discount_rate");
 		
 		this.minibatch = helpers.getIFMap(config.hiperParameters,"minibatch");
@@ -118,22 +129,22 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 		
 		ArrayList<ArrayList<double[][]>> episodes = new ArrayList<ArrayList<double[][]>>();
 		
-		
+		// TODO arreglar tema epochs para que sea viable
 		//for(int i  = 1; i < dataExchange.getIFMap(parameters,"epochs");i++){
 		for(int i = 1; i < 10000; i++) {
 			int newAction;
 			sEnv.resetWorld();
 			
+			// TODO eliminar o modificar esta sección
 			if(i%10==0) printResult(sEnv);
 			if(i%10==0) System.out.println("Estamos en el momento: " + i);
-			if(i%500==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
 			if(i%20==0) System.out.println("Estamos en el " + i + " : " + getResult(sEnv));
 			
+			// TODO establecer el valor C para limpiar memoria
+			if(i%500==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
 			
 			while(!sEnv.isEndState()) {
-				
-				
-				if(Math.random() < helpers.getDFMap(config.parameters,"exploration_rate"))
+				if(Math.random() < this.explorationRate)
 					newAction = getRandomAction(sEnv.getActionNumber()) ;
 				else newAction = getGreedyAction(sEnv.getStateMap(), sEnv.getActionNumber());
 				//Creating episode and doing action in game
@@ -281,6 +292,9 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 			}
 			total += sEnv.getRewardFromState();
 		}
+		this.allVal+=total;
+		this.kPoint++;
+		System.out.println("El valor medio es : " + allVal/kPoint);
 		return total;
 		
 	}

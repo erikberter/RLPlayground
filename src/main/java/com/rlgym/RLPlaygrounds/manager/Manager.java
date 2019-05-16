@@ -25,8 +25,8 @@ public class Manager {
 	public Manager setEnviroment(GameName envName){
 		switch(envName){
 			case APPLEFALL:
-				this.enviroment = new AppleFall(helpers.getIFMap(config.hiperParameters,"inputWidth"),
-						helpers.getIFMap(config.hiperParameters,"inputHeight"));
+				this.enviroment = new AppleFall(helpers.getIFMap(config.hiperParameters,"input_width"),
+						helpers.getIFMap(config.hiperParameters,"input_height"));
 				break;
 			case GRIDWORLD:
 				this.enviroment = new GridWorld();

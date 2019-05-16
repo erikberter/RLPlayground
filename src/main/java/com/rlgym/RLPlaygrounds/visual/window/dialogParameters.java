@@ -32,6 +32,8 @@ public class dialogParameters extends JDialog {
 	JSlider slider,sldEpoch,sldDiscFactor,sldLearningRate;
 	JLabel lblEpochs, lblDiscountFactor,lblLearningRate,lblExplorationDiscount;
 	public dialogParameters() {
+		setTitle("Parameter Configuration");
+		setResizable(false);
 		setBounds(100, 100, 522, 394);
 		getContentPane().setLayout(null);
 		{
