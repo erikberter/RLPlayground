@@ -3,7 +3,6 @@ package com.rlgym.RLPlaygrounds.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 
 public class config extends Throwable{
 
@@ -24,24 +23,24 @@ public class config extends Throwable{
 	 * O bien palabraSiguientePalabra
 	 */
 	public static void resetParameters(){
-		parameters.put("learning_rate",0.5);
-		parameters.put("discount_rate",0.5);
+		parameters.put("learning_rate",0.1);
+		parameters.put("discount_rate",0.98);
 		parameters.put("epochs", 100);
-		parameters.put("exploration_rate",0.5);
-		parameters.put("reward_on_step", 0.1);
+		parameters.put("exploration_rate",0.05);
+		parameters.put("reward_on_step", 0.05);
 	}
 	
 	public static void resetHiperParameters(){
 		hiperParameters.put("seed", 142);
-		hiperParameters.put("updaterRate", 0.001);
-		hiperParameters.put("numInputs", 6);
-		hiperParameters.put("numHiddenNodes", 5);
-		hiperParameters.put("numOutputs", 3);
+		hiperParameters.put("updater_rate", 0.001);
+		hiperParameters.put("n_input", 6);
+		hiperParameters.put("n_hidden_nodes", 5);
+		hiperParameters.put("n_outputs", 3);
 		hiperParameters.put("minibatch", 22);
 		
-		hiperParameters.put("inputHeight", 5);
-		hiperParameters.put("inputWidth", 6);
-		hiperParameters.put("inputChannels", 1);
+		hiperParameters.put("input_height", 5);
+		hiperParameters.put("input_width", 6);
+		hiperParameters.put("input_channels", 1);
 	}
 	
 	
