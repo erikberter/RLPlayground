@@ -109,7 +109,7 @@ public class mainFrame {
 		
 		final JComboBox comboBox_1 = new JComboBox();
 		panel_7.add(comboBox_1);
-		comboBox_1.setModel(new DefaultComboBoxModel(new OptimizationNames[] {OptimizationNames.DQN, OptimizationNames.QLearning}));
+		comboBox_1.setModel(new DefaultComboBoxModel(OptimizationNames.values()));
 		comboBox_1.setEditable(true);
 		
 		JPanel panel_8 = new JPanel();
@@ -121,7 +121,7 @@ public class mainFrame {
 		final JComboBox comboBox = new JComboBox();
 		panel_8.add(comboBox);
 		comboBox.setEditable(true);
-		comboBox.setModel(new DefaultComboBoxModel(new GameName[] {GameName.GRIDWORLD,GameName.APPLEFALL}));
+		comboBox.setModel(new DefaultComboBoxModel(GameName.values()));
 		
 		JPanel parameterPanel = new JPanel();
 		upperControlPanel.add(parameterPanel);

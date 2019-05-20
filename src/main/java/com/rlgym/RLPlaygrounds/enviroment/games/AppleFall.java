@@ -13,7 +13,11 @@ public class AppleFall implements ScreenBasedEnviroment{
 	//Extra Information
 	private int applex, appley, boardx;
 	
-	
+	public AppleFall() {
+		this.width = 5;
+		this.height = 6;
+		this.actionN = 3;// 0. Left ::  1. Stay :: 2. Right
+	}
 	public AppleFall(int width, int height) {
 		this.width = width;
 		this.height = height;

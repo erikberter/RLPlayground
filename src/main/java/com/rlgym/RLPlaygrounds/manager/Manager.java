@@ -22,23 +22,20 @@ public class Manager {
 		
 	}
 	
+	
+	
 	public Manager setEnviroment(GameName envName){
-		switch(envName){
-			case APPLEFALL:
-				this.enviroment = new AppleFall(helpers.getIFMap(config.hiperParameters,"input_width"),
-						helpers.getIFMap(config.hiperParameters,"input_height"));
-				break;
-			case GRIDWORLD:
-				this.enviroment = new GridWorld();
-				break;
-			default:
-				System.err.println("No se ha encontrado la clase dentro del enum");// TODO cambiar el error
+		try {
+			this.enviroment = envName.getClase();
+		}catch(Exception ex) {// TODO encontrar cual es el error concreto
+			System.err.println("No se ha encontrado la clase dentro del enum de GAMENAME");// TODO cambiar el error
 		}
 		return this;
 		
 	}
 	
 	public Manager setOptimization(OptimizationNames optimizatorName){
+		//TODO ponerlo como el enviroment
 		switch(optimizatorName){
 			case QLearning:
 				this.optimizer = new QLearning().setExplorationFunction(explorationFunction.CONSTANT)
@@ -59,7 +56,8 @@ public class Manager {
 	
 	public void OptimizeAgent() {
 		//Check if is valid the combination
-		this.optimizer.start();
+		Thread td = new Thread(this.optimizer);
+		td.start();
 		
 		System.out.println("Minimizada");
 	}
