@@ -41,10 +41,11 @@ public class Manager {
 	public Manager setOptimization(OptimizationNames optimizatorName){
 		switch(optimizatorName){
 			case QLearning:
-				this.optimizer = new QLearning(this.enviroment).setExplorationFunction(explorationFunction.CONSTANT);
+				this.optimizer = new QLearning().setExplorationFunction(explorationFunction.CONSTANT)
+				.setEnviroment(this.enviroment, EnviromentTypes.STATE_BASED);
 				break;
 			case DQN:
-				this.optimizer = new DQN();
+				this.optimizer = new DQN().setEnviroment(this.enviroment, EnviromentTypes.SCREEN_BASED);
 				break;
 			default:
 				System.err.println("No se ha encontrado la clase dentro del enum"); //Cambiar el error
@@ -52,16 +53,19 @@ public class Manager {
 		return this;
 	}
 	
-	
+	public void initOptimizator(){
+		this.optimizer.init();
+	}
 	
 	public void OptimizeAgent() {
 		//Check if is valid the combination
-		this.optimizer.minimizeEpochs(this.enviroment);
+		this.optimizer.start();
+		
 		System.out.println("Minimizada");
 	}
 	
 	public void printResult() {
-		this.optimizer.printResult(this.enviroment);
+		this.optimizer.printResult();
 	}
 	
 }

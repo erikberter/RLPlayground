@@ -12,10 +12,11 @@ import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.StateOptimization;
 import com.rlgym.RLPlaygrounds.configuration.config;
 
-public class QLearning extends GenericOptimizator implements StateOptimization{
+public class QLearning extends GenericOptimizator implements StateOptimization, Runnable{
 	
+	
+	private StateBasedEnviroment sEnvT;
 	// TODO inicializar las variables
-	
 	double[][] QsaMatrix;
 	private int stateSize, actSize, epochs;
 	private double explorationRate, learningRate, rewardOnStep, discountFactor;
@@ -36,19 +37,8 @@ public class QLearning extends GenericOptimizator implements StateOptimization{
 		initializeVariable();
 	}
 	
-	public QLearning(Enviroment env) {
-		StateBasedEnviroment sEnv = null;
-		try{
-			sEnv = checkValidity(env);
-			
-		}catch(Exception e){
-			System.err.println(e.getMessage());
-			return;
-		}
-		this.stateSize = sEnv.getStateNumber();
-		this.actSize = sEnv.getActionNumber();
-		this.QsaMatrix = new double[stateSize][actSize];
-		initializeVariable();
+	public QLearning() {
+		
 	}
 	
 	private void initializeVariable(){
@@ -58,35 +48,33 @@ public class QLearning extends GenericOptimizator implements StateOptimization{
 		this.rewardOnStep = helpers.getDFMap(config.parameters,"reward_on_step");
 		this.discountFactor = helpers.getDFMap(config.parameters,"discount_factor");
 		
-		
-		
+	}
+	public void init(){
+		this.sEnvT =  (StateBasedEnviroment) this.sEnv;
+		this.stateSize = this.sEnvT.getStateNumber();
+		this.actSize = this.sEnvT.getActionNumber();
+		this.QsaMatrix = new double[stateSize][actSize];
+		initializeVariable();
 	}
 	
-	public void minimizeEpochs(Enviroment env) {
-		
-		StateBasedEnviroment sEnv;
-		try {
-			sEnv = checkValidity(env);
-		} catch (Exception e) {
-			System.err.println("The enviroment type in minimizeEpochs is not Static");
-			return;
-		}
-		
+	public void minimizeEpochs() {
+		System.out.println(this.epochs);
 		for(int epochi = 0; epochi < this.epochs; epochi++) {
-			sEnv.resetWorld();
+			this.sEnvT.resetWorld();
+			System.out.println("ola");
 			int newAction, nextState;
-			for(int statei = 0; !sEnv.isEndState(); statei++) {
+			for(int statei = 0; !this.sEnvT.isEndState(); statei++) {
 				if(Math.random() < explorationAlgorithms.getExplorationRate(this.expFunction, this.explorationRate,statei,0)) 
 					newAction = getRandomAction(this.actSize);
 				else 
-					newAction = getGreedyAction(sEnv.getCurrentState(), this.actSize);
-				nextState = sEnv.doActionS(newAction);
-				double reward = sEnv.getRewardFromState(nextState) + this.rewardOnStep;
+					newAction = getGreedyAction(this.sEnvT.getCurrentState(), this.actSize);
+				nextState = this.sEnvT.doActionS(newAction);
+				double reward = this.sEnvT.getRewardFromState(nextState) + this.rewardOnStep;
 				double maxQsaValue = this.QsaMatrix[nextState][getGreedyAction(nextState, this.actSize)];
 				
-				this.QsaMatrix[sEnv.getCurrentState()][newAction] = (1-this.learningRate)*this.QsaMatrix[sEnv.getCurrentState()][newAction];
-				this.QsaMatrix[sEnv.getCurrentState()][newAction] += this.learningRate*(reward + (this.discountFactor*maxQsaValue));
-				sEnv.doAction(newAction);
+				this.QsaMatrix[this.sEnvT.getCurrentState()][newAction] = (1-this.learningRate)*this.QsaMatrix[this.sEnvT.getCurrentState()][newAction];
+				this.QsaMatrix[this.sEnvT.getCurrentState()][newAction] += this.learningRate*(reward + (this.discountFactor*maxQsaValue));
+				this.sEnvT.doAction(newAction);
 			}
 		}
 		
@@ -115,22 +103,13 @@ public class QLearning extends GenericOptimizator implements StateOptimization{
 		return (int)(Math.random()*(actSize));
 	}
 
-	public void minimizeLoss(Enviroment env) {
+	public void minimizeLoss() {
 		// TODO Hacer la minimize Loss
 		
 	}
 
 
-	public void printResult(Enviroment env) {
-		
-		StateBasedEnviroment sEnv;
-		try {
-			sEnv = checkValidity(env);
-		} catch (Exception e) {
-			System.err.println("The enviroment type in minimizeEpochs is not Static");
-			return;
-		}
-		
+	public void printResult() {
 		for(int i = 0; i < this.stateSize ; i++ ) {
 			for(int j = 0; j < this.actSize; j++) {
 				System.out.print(this.QsaMatrix[i][j] + "  :  ");
@@ -138,20 +117,20 @@ public class QLearning extends GenericOptimizator implements StateOptimization{
 			System.out.println();
 		}
 		
-		sEnv.resetWorld();
-		System.out.println("State 0 : " + sEnv.getCurrentState());
-		System.out.println(sEnv.getRewardFromState(sEnv.getCurrentState()));
-		int[] q = sEnv.fromIntStateToRealState(sEnv.getCurrentState());
+		this.sEnvT.resetWorld();
+		System.out.println("State 0 : " + this.sEnvT.getCurrentState());
+		System.out.println(this.sEnvT.getRewardFromState(this.sEnvT.getCurrentState()));
+		int[] q = this.sEnvT.fromIntStateToRealState(this.sEnvT.getCurrentState());
 		System.out.println(q[0] + " : " + q[1]);
 		int i = 0;
-		while(!sEnv.isEndState() && i<30) {
+		while(!this.sEnvT.isEndState() && i<30) {
 			int newAction;
-			newAction = getGreedyAction(sEnv.getCurrentState(), this.actSize);
+			newAction = getGreedyAction(this.sEnvT.getCurrentState(), this.actSize);
 			System.out.println("Moving " + newAction);
-			sEnv.doAction(newAction);
-			System.out.println("State " + i + " : " + sEnv.getCurrentState());
-			System.out.println(sEnv.getRewardFromState(sEnv.getCurrentState()));
-			q = sEnv.fromIntStateToRealState(sEnv.getCurrentState());
+			this.sEnvT.doAction(newAction);
+			System.out.println("State " + i + " : " + this.sEnvT.getCurrentState());
+			System.out.println(this.sEnvT.getRewardFromState(this.sEnvT.getCurrentState()));
+			q = this.sEnvT.fromIntStateToRealState(this.sEnvT.getCurrentState());
 			System.out.println(q[0] + " : " + q[1]);
 			i++;
 		}
@@ -161,6 +140,11 @@ public class QLearning extends GenericOptimizator implements StateOptimization{
 	public double getGreedyValue(Object currentState, int actSize) {
 		// Unused
 		return 0;
+	}
+
+	public void run() {
+		minimizeEpochs();
+		
 	}
 
 

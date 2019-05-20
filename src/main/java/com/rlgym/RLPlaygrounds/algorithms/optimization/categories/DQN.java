@@ -27,21 +27,24 @@ import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.EnviromentOptimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
+import com.rlgym.RLPlaygrounds.enviroment.EnviromentTypes;
 import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
 
 
 import com.rlgym.RLPlaygrounds.configuration.config;
 
-public class DQN  extends GenericOptimizator implements EnviromentOptimization{
+public class DQN  extends GenericOptimizator implements EnviromentOptimization, Runnable{
+	
+	ScreenBasedEnviroment sEnvT;
 	
 	//Neural Network Model
 	private MultiLayerNetwork model;
 	
 	//Neural Network input info
-	private int inputHeight, inputWidth, inputChannels;
-	
+	private int inputHeight, inputWidth, inputChannels, printResult;
+	private boolean printResultB;
 	//Neural network hiperparameters
-	private int seed, numInputs, numOutputs, minibatch;
+	private int seed, numInputs, numOutputs, minibatch, memoryClean;
 	private double updaterRate, discountFactor;
 	
 	//Information for global computing
@@ -50,7 +53,12 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 	// parameters 
 	private double explorationRate;
 	
+	private ArrayList<ArrayList<double[][]>> episodes;
+	
 	public DQN() {
+		this.envType = EnviromentTypes.SCREEN_BASED;
+		
+		
 		// TODO cambiar esto porque no me gusta
 		// Lo suyo sería que tuviera hecho de una forma más clara
 		this.allVal  = 0;
@@ -85,7 +93,11 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 		
 		this.model =  new MultiLayerNetwork(conf);
 		this.model.init();
+		
+	}
 	
+	public void init(){
+		this.sEnvT = (ScreenBasedEnviroment) this.sEnv;
 	}
 	
 	public void initializeInternalVariablesFromConfig() {
@@ -93,7 +105,8 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 		// parameters
 		this.explorationRate = helpers.getDFMap(config.parameters,"exploration_rate");
 		
-		
+		this.printResult = helpers.getIFMap(config.parameters,"print_after_steps");
+		this.printResultB = helpers.getBFMap(config.parameters,"is_print_after_steps");
 		// hiperparameters
 		this.seed = helpers.getIFMap(config.hiperParameters,"seed");
 		this.numInputs= helpers.getIFMap(config.hiperParameters,"n_input");
@@ -104,98 +117,80 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 		this.inputChannels = helpers.getIFMap(config.hiperParameters,"input_channels");
 		
 		this.updaterRate = helpers.getDFMap(config.hiperParameters,"updater_rate");
-		this.discountFactor = helpers.getDFMap(config.parameters,"discount_rate");
+		this.discountFactor = helpers.getDFMap(config.parameters,"discount_factor");
 		
 		this.minibatch = helpers.getIFMap(config.hiperParameters,"minibatch");
+		
+		this.memoryClean = helpers.getIFMap(config.hiperParameters,"memory_clean");
 	}
 	
 	
-	private ScreenBasedEnviroment checkValidity(Enviroment env) throws Exception{
-		if(env instanceof ScreenBasedEnviroment)
-			return (ScreenBasedEnviroment) env;
-		else
-			throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
-	}
 
-	public void minimizeEpochs(Enviroment env) {
+	public void minimizeEpochs() {
 		
-		ScreenBasedEnviroment sEnv;
-		try {
-			sEnv = checkValidity(env);
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return;
-		}
-		
-		ArrayList<ArrayList<double[][]>> episodes = new ArrayList<ArrayList<double[][]>>();
+		this.episodes = new ArrayList<ArrayList<double[][]>>();
 		
 		// TODO arreglar tema epochs para que sea viable
 		//for(int i  = 1; i < dataExchange.getIFMap(parameters,"epochs");i++){
 		for(int i = 1; i < 10000; i++) {
 			int newAction;
-			sEnv.resetWorld();
+			this.sEnvT.resetWorld();
 			
 			// TODO eliminar o modificar esta sección
-			if(i%10==0) printResult(sEnv);
-			if(i%10==0) System.out.println("Estamos en el momento: " + i);
-			if(i%20==0) System.out.println("Estamos en el " + i + " : " + getResult(sEnv));
-			
+			if(printResultB & i%printResult==0) printResult();
+			if(i%10==0) printResult();
 			// TODO establecer el valor C para limpiar memoria
 			if(i%500==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
 			
-			while(!sEnv.isEndState()) {
+			while(!this.sEnvT.isEndState()) {
 				if(Math.random() < this.explorationRate)
-					newAction = getRandomAction(sEnv.getActionNumber()) ;
-				else newAction = getGreedyAction(sEnv.getStateMap(), sEnv.getActionNumber());
+					newAction = getRandomAction(this.sEnvT.getActionNumber()) ;
+				else newAction = getGreedyAction(this.sEnvT.getStateMap(), this.sEnvT.getActionNumber());
 				//Creating episode and doing action in game
-				
 				//Each episode is in the form (s_t,a,rwd,s_{t+1},endState?)
-				ArrayList<double[][]> tempEpisode = new ArrayList<double[][]>();
-				tempEpisode.add(sEnv.getStateMap());
-				tempEpisode.add(new double[][] {{newAction}});
-				sEnv.doAction(newAction);
-				tempEpisode.add(new double[][] {{sEnv.getRewardFromState()}});
-				tempEpisode.add(sEnv.getStateMap());
-				tempEpisode.add(new double[][] {{(sEnv.isEndState())? 1.0: 0.0}});
-				episodes.add(tempEpisode);
-				
+				addEpisode(this.sEnvT, newAction);
 				
 				if(episodes.size() > this.minibatch) {
 					int epPoint = (int)(Math.random()*(episodes.size()-this.minibatch));
 					for(int j = 0; j < this.minibatch; j++) {
-						double[][] screenTP = episodes.get(epPoint+j).get(0);//s_t
 						int actionT = (int) episodes.get(epPoint+j).get(1)[0][0];//action
-						double yJ = episodes.get(epPoint+j).get(2)[0][0];//reward
-						double[][] screenT = episodes.get(epPoint+j).get(3);//s_{t+1}
-						double isEndStateT = episodes.get(epPoint+j).get(4)[0][0];//endstate?
+						double yJ = episodes.get(epPoint+j).get(2)[0][0];
+						
+						if(episodes.get(epPoint+j).get(4)[0][0]==1.0)
+							yJ+=this.discountFactor*getGreedyValue(episodes.get(epPoint+j).get(3), this.sEnvT.getActionNumber());
 						
 						
-						if(isEndStateT==1.0)
-							yJ+=this.discountFactor*getGreedyValue(screenT, env.getActionNumber());
-						
-						
-						INDArray inputTemp = Nd4j.create(screenTP);
+						INDArray inputTemp = Nd4j.create(episodes.get(epPoint+j).get(0));
 						inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 						INDArray yJT = this.model.output(inputTemp);//Q(s;0)
 						double tempCoord = yJT.getDouble(actionT);//Q(s,a;0)
-						yJT.putScalar(new int[] {actionT},yJ);//Q(s,a;0)+y_j
+						yJT.putScalar(new int[] {actionT},yJ);//Q(s,a;0)y_j
 						DataSet ds = new DataSet(inputTemp, yJT);
 						this.model.fit(ds);
 					
 					}
-				
 				}
 			}
-			
 		}
-		
 	}
 
-	public void minimizeLoss(Enviroment env) {
+	public void minimizeLoss() {
 		// TODO Hacer la minimizeLoss
 		
 	}
 
+	public void addEpisode(ScreenBasedEnviroment sEnvT, int newAction){
+		ArrayList<double[][]> tempEpisode = new ArrayList<double[][]>();
+		tempEpisode.add(sEnvT.getStateMap());
+		tempEpisode.add(new double[][] {{newAction}});
+		sEnvT.doAction(newAction);
+		tempEpisode.add(new double[][] {{sEnvT.getRewardFromState()}});
+		tempEpisode.add(sEnvT.getStateMap());
+		tempEpisode.add(new double[][] {{(sEnvT.isEndState())? 1.0: 0.0}});
+		episodes.add(tempEpisode);
+	}
+	
+	
 	public int getGreedyAction(double[][] screen, int actSize) {
 		INDArray inputTemp = Nd4j.create(screen);
 		inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
@@ -247,50 +242,35 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 		return actionT;
 	}
 	
-	public void printResult(Enviroment env) {
-		ScreenBasedEnviroment sEnv;
-		try {
-			sEnv = checkValidity(env);
-		} catch (Exception e) {
-			System.err.println("The enviroment type in minimizeEpochs is not Static");
-			return;
-		}
-		
+	public void printResult() {
 		int newAction;
-		sEnv.resetWorld();
+		this.sEnvT.resetWorld();
 		//int[] currentState = new int[] {5,7,5};
-		while(!sEnv.isEndState()){
+		while(!this.sEnvT.isEndState()){
 			//Look for action
-			newAction = getGreedyActionP(sEnv.getStateMap(), sEnv.getActionNumber());
-			sEnv.doAction(newAction);
-			sEnv.printMap();
+			newAction = getGreedyActionP(this.sEnvT.getStateMap(), this.sEnvT.getActionNumber());
+			this.sEnvT.doAction(newAction);
+			this.sEnvT.printMap();
 			System.out.println("\n-----------------------------\n");
 		}
-		if(sEnv.getRewardFromState()>0) System.out.println("WIN!");
+		if(this.sEnvT.getRewardFromState()>0) System.out.println("WIN!");
 		else System.out.println("LOSE :_C");
 		
 	}
 	
-	public int getResult(Enviroment env) {
-		ScreenBasedEnviroment sEnv;
+	public int getResult() {
 		int total=0;
-		try {
-			sEnv = checkValidity(env);
-		} catch (Exception e) {
-			System.err.println("The enviroment type in minimizeEpochs is not Static");
-			return 0;
-		}
 		
 		for(int i = 0; i < 100; i++) {
 			int newAction;
-			sEnv.resetWorld();
+			this.sEnvT.resetWorld();
 			//int[] currentState = new int[] {5,7,5};
-			while(!sEnv.isEndState()){
+			while(!sEnvT.isEndState()){
 				//Look for action
-				newAction = getGreedyAction(sEnv.getStateMap(), sEnv.getActionNumber());
-				sEnv.doAction(newAction);
+				newAction = getGreedyAction(this.sEnvT.getStateMap(), this.sEnvT.getActionNumber());
+				this.sEnvT.doAction(newAction);
 			}
-			total += sEnv.getRewardFromState();
+			total += this.sEnvT.getRewardFromState();
 		}
 		this.allVal+=total;
 		this.kPoint++;
@@ -298,5 +278,11 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization{
 		return total;
 		
 	}
+
+	public void run() {
+		minimizeEpochs();
+		
+	}
+
 
 }

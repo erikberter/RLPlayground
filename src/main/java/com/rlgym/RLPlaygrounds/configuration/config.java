@@ -24,10 +24,13 @@ public class config extends Throwable{
 	 */
 	public static void resetParameters(){
 		parameters.put("learning_rate",0.1);
-		parameters.put("discount_rate",0.98);
-		parameters.put("epochs", 100);
+		parameters.put("discount_factor",0.9);
+		parameters.put("epochs", 200);
 		parameters.put("exploration_rate",0.05);
-		parameters.put("reward_on_step", 0.05);
+		parameters.put("reward_on_step", -0.05);
+		
+		parameters.put("print_after_steps", 100);
+		parameters.put("is_print_after_steps", true);
 	}
 	
 	public static void resetHiperParameters(){
@@ -41,6 +44,7 @@ public class config extends Throwable{
 		hiperParameters.put("input_height", 5);
 		hiperParameters.put("input_width", 6);
 		hiperParameters.put("input_channels", 1);
+		hiperParameters.put("memory_clean", 400);
 	}
 	
 	
