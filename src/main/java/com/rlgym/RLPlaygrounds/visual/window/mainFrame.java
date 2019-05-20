@@ -153,6 +153,7 @@ public class mainFrame {
 		buttonPanel.add(btnReset);
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("SI");
 				manager = new Manager().setEnviroment((GameName) comboBox.getSelectedItem()).setOptimization((OptimizationNames) comboBox_1.getSelectedItem());
 				manager.initOptimizator();
 			}

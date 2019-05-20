@@ -20,3 +20,8 @@
 *.zip
 *.tar.gz
 *.rar
+
+
+.classpath
+.settings/
+.project

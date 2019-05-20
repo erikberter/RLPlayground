@@ -24,6 +24,7 @@ public abstract class GenericOptimizator implements Optimization, Runnable{
 		}
 		return this;
 	}
+	//Gi
 	
 	private Enviroment checkValidity(Enviroment env, EnviromentTypes envTp) throws Exception{
 		switch(envTp){
