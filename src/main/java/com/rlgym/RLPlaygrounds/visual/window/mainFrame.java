@@ -188,6 +188,7 @@ public class mainFrame {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		leftPanel.add(scrollPane_1);
 		
+		// TODO hacer esto auto actualizable
 		JTree tree = new JTree();
 		scrollPane_1.setViewportView(tree);
 		tree.setModel(new DefaultTreeModel(

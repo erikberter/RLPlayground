@@ -17,12 +17,8 @@ public class config extends Throwable{
 		resetParameters();
 		resetHiperParameters();
 	}
-	//Deberia cambiar todo a la misma estatica
-	/*
-	 * O bien palabra_siguiente_palabra
-	 * O bien palabraSiguientePalabra
-	 */
 	public static void resetParameters(){
+		//TODO hacer que los ajustes default esten en un archivo config.json
 		parameters.put("learning_rate",0.1);
 		parameters.put("discount_factor",0.9);
 		parameters.put("epochs", 200);

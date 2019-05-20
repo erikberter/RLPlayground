@@ -26,6 +26,8 @@ Una vez creada la clase, pasaremos a implementar alguno de los estilos predefini
 - ScreenBasedEnviroment
 - StateBasedEnviroment
 
+los cuales son interfaces que implementan la interfaz global _Enviroment_. A partir de aquí bastaría con rellenar los métodos teniendo en cuenta los outputs que deberían salir.
+
 ## Versiones
 
 ### A futuro
