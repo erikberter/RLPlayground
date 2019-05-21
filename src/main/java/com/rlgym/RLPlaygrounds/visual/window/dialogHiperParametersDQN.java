@@ -15,6 +15,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.configuration.config;
 
 import javax.swing.event.ChangeEvent;
@@ -103,10 +104,13 @@ public class dialogHiperParametersDQN extends JDialog {
 		panel_2.add(lblUpdaterRate);
 		
 		updateRateSLD = new JSlider();
+		updateRateSLD.setValue(-1);
+		updateRateSLD.setMinimum(-2);
+		updateRateSLD.setMaximum(4);
 		updateRateSLD.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				config.hiperParameters.put("update_rate",updateRateSLD.getValue());
-				lblUpdaterRate.setText("Update Rate (" + String.valueOf(config.hiperParameters.get("learning_rate"))+ ")");
+				config.parameters.put("update_rate",Math.pow(10,-updateRateSLD.getValue() ));
+				lblUpdaterRate.setText("Update Rate (" + String.valueOf(helpers.getDFMap(config.parameters,"update_rate"))+ ")");
 			}
 		});
 		updateRateSLD.setBounds(291, 137, 200, 26);

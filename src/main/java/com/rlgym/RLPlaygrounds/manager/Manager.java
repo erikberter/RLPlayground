@@ -27,26 +27,26 @@ public class Manager {
 	public Manager setEnviroment(GameName envName){
 		try {
 			this.enviroment = envName.getClase();
-		}catch(Exception ex) {// TODO encontrar cual es el error concreto
-			System.err.println("No se ha encontrado la clase dentro del enum de GAMENAME");// TODO cambiar el error
+		}catch(Exception ex) {
+			System.err.println("No se ha podido cargar el nombre dentro del enum de GAMENAME");
 		}
 		return this;
 		
 	}
-	
+	// TODO eliminar todos los SYSO
 	public Manager setOptimization(OptimizationNames optimizatorName){
-		//TODO ponerlo como el enviroment
-		switch(optimizatorName){
-			case QLearning:
-				this.optimizer = new QLearning().setExplorationFunction(explorationFunction.CONSTANT)
-				.setEnviroment(this.enviroment, EnviromentTypes.STATE_BASED);
-				break;
-			case DQN:
-				this.optimizer = new DQN().setEnviroment(this.enviroment, EnviromentTypes.SCREEN_BASED);
-				break;
-			default:
-				System.err.println("No se ha encontrado la clase dentro del enum"); //Cambiar el error
+		//Set the optimization algorithm
+		try {
+			this.optimizer = optimizatorName.getClase();
+		}catch(Exception ex) {
+			System.err.println("No se ha podido cargar el nombre dentro del enum de GAMENAME");
 		}
+		
+		//Set the generic parameters
+		this.optimizer = this.optimizer
+				.setExplorationFunction(explorationFunction.CONSTANT)
+				.setEnviroment(this.enviroment, optimizatorName.getEnviromentType());
+		
 		return this;
 	}
 	

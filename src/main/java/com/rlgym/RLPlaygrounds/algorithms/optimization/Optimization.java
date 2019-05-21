@@ -13,7 +13,7 @@ public interface Optimization{
 	public void minimizeEpochs();
 	public void minimizeLoss();
 	
-	int getRandomAction(int actSize); // TODO añadir public o private o algo
+	public int getRandomAction(int actSize); 
 	
 	public void printResult();
 	

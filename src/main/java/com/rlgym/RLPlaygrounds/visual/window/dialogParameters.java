@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
+import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.configuration.config;
 import com.rlgym.RLPlaygrounds.enviroment.games.GameName;
 
@@ -29,7 +30,7 @@ public class dialogParameters extends JDialog {
 	 */
 	
 	// TODO Cambiar las funciones de las barras a la que esta en config para evitar errores
-	JSlider slider,sldEpoch,sldDiscFactor,sldLearningRate;
+	JSlider sldExploration,sldEpoch,sldDiscFactor,sldLearningRate;
 	JLabel lblEpochs, lblDiscountFactor,lblLearningRate,lblExplorationDiscount;
 	public dialogParameters() {
 		setTitle("Parameter Configuration");
@@ -68,10 +69,13 @@ public class dialogParameters extends JDialog {
 		parGeneralPan.add(lblEpochs);
 		
 		sldEpoch = new JSlider();
+		sldEpoch.setValue(3);
+		sldEpoch.setMinimum(1);
+		sldEpoch.setMaximum(8);
 		sldEpoch.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				config.parameters.put("epochs",sldEpoch.getValue());
-				lblEpochs.setText("Epoch (" + String.valueOf(config.parameters.get("epochs"))+ ")");
+				config.parameters.put("epochs",Math.pow(10,sldEpoch.getValue() ));
+				lblEpochs.setText("Epoch (" + String.valueOf(helpers.getDFMap(config.parameters,"epochs"))+ ")");
 			}
 		});
 		sldEpoch.setBounds(10, 30, 200, 26);
@@ -80,8 +84,8 @@ public class dialogParameters extends JDialog {
 		sldDiscFactor = new JSlider();
 		sldDiscFactor.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				config.parameters.put("discount_factor",sldDiscFactor.getValue());
-				lblDiscountFactor.setText("Discount Factor (" + String.valueOf(config.parameters.get("discount_factor"))+ ")");
+				config.parameters.put("discount_factor",(double)sldDiscFactor.getValue()/100);
+				lblDiscountFactor.setText("Discount Factor (" + String.valueOf(helpers.getDFMap(config.parameters,"discount_factor"))+ ")");
 			}
 		});
 		sldDiscFactor.setBounds(291, 30, 200, 26);
@@ -100,8 +104,8 @@ public class dialogParameters extends JDialog {
 		sldLearningRate = new JSlider();
 		sldLearningRate.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				config.parameters.put("learning_rate",sldLearningRate.getValue());
-				lblDiscountFactor.setText("Learning Rate (" + String.valueOf(config.parameters.get("learning_rate"))+ ")");
+				config.parameters.put("learning_rate",(double)sldLearningRate.getValue()/100);
+				lblLearningRate.setText("Learning Rate (" + String.valueOf(helpers.getDFMap(config.parameters,"learning_rate"))+ ")");
 			}
 		});
 		sldLearningRate.setBounds(291, 92, 200, 26);
@@ -116,15 +120,19 @@ public class dialogParameters extends JDialog {
 		lblExplorationDiscount.setBounds(10, 11, 200, 14);
 		parExplorePanel.add(lblExplorationDiscount);
 		
-		slider = new JSlider();
-		slider.setBounds(10, 36, 200, 26);
-		parExplorePanel.add(slider);
+		sldExploration = new JSlider();
+		sldExploration.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				config.parameters.put("exploration_rate",(double)sldExploration.getValue()/100);
+				lblExplorationDiscount.setText("Exploration Rate (" + String.valueOf(helpers.getDFMap(config.parameters,"exploration_rate"))+ ")");
+			}
+		});
+		sldExploration.setBounds(10, 36, 200, 26);
+		parExplorePanel.add(sldExploration);
 		
 		JComboBox comboBox = new JComboBox();
 		comboBox.setBounds(10, 98, 200, 20);
-		comboBox.setModel(new DefaultComboBoxModel(new explorationFunction[] {
-				explorationFunction.CONSTANT,explorationFunction.CONSTANT_DECAY,
-				explorationFunction.EXPONENTIAL_DECAY, explorationFunction.LINEAR_DECAY_WITH_MINIMUM }));
+		comboBox.setModel(new DefaultComboBoxModel(explorationFunction.values()));
 		parExplorePanel.add(comboBox);
 		
 		JLabel lblExploringDecayFunction = new JLabel("Exploring Decay Function");
@@ -141,6 +149,13 @@ public class dialogParameters extends JDialog {
 		parRewardPanel.add(lblRewardOnStep);
 		
 		JSlider sldRewardpStep = new JSlider();
+		sldRewardpStep.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				//TODO cambiar la funcion rewards
+				config.parameters.put("reward_on_step",(double)sldExploration.getValue()/100);
+				lblExplorationDiscount.setText("Exploration Rate (" + String.valueOf(helpers.getDFMap(config.parameters,"reward_on_step"))+ ")");
+			}
+		});
 		sldRewardpStep.setBounds(10, 36, 200, 26);
 		parRewardPanel.add(sldRewardpStep);
 	}

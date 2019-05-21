@@ -28,6 +28,7 @@ Una vez creada la clase, pasaremos a implementar alguno de los estilos predefini
 
 los cuales son interfaces que implementan la interfaz global _Enviroment_. A partir de aquí bastaría con rellenar los métodos teniendo en cuenta los outputs que deberían salir.
 
+Para más información ver la [documentación](documentation/general.md)
 ## Versiones
 
 ### A futuro
