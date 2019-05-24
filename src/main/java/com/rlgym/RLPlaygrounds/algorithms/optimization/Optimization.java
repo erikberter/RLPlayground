@@ -1,11 +1,6 @@
 package com.rlgym.RLPlaygrounds.algorithms.optimization;
 
 
-import java.util.Map;
-
-import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
-import com.rlgym.RLPlaygrounds.enviroment.*;
-import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
 
 public interface Optimization{
 
@@ -15,6 +10,6 @@ public interface Optimization{
 	
 	public int getRandomAction(int actSize); 
 	
-	public void printResult();
+	public String printResult();
 	
 }

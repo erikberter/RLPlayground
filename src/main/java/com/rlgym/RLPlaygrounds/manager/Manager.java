@@ -1,17 +1,10 @@
 package com.rlgym.RLPlaygrounds.manager;
 
 
-import java.util.Map;
-
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
-import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
-import com.rlgym.RLPlaygrounds.algorithms.optimization.*;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.categories.*;
-import com.rlgym.RLPlaygrounds.configuration.config;
 import com.rlgym.RLPlaygrounds.enviroment.*;
 import com.rlgym.RLPlaygrounds.enviroment.games.*;
-import com.rlgym.RLPlaygrounds.enviroment.types.StateBasedEnviroment;
-
 public class Manager {
 
 	Enviroment enviroment;
@@ -62,8 +55,9 @@ public class Manager {
 		System.out.println("Minimizada");
 	}
 	
-	public void printResult() {
-		this.optimizer.printResult();
+	public String printResult() {
+		return this.optimizer.printResult();
+		
 	}
 	
 }

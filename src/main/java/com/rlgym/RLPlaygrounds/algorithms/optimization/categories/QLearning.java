@@ -1,14 +1,11 @@
 package com.rlgym.RLPlaygrounds.algorithms.optimization.categories;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import com.rlgym.RLPlaygrounds.enviroment.*;
 import com.rlgym.RLPlaygrounds.enviroment.types.StateBasedEnviroment;
 import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationAlgorithms;
-import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
-import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.StateOptimization;
 import com.rlgym.RLPlaygrounds.configuration.config;
 
@@ -21,6 +18,7 @@ public class QLearning extends GenericOptimizator implements StateOptimization, 
 	private int stateSize, actSize, epochs;
 	private double explorationRate, learningRate, rewardOnStep, discountFactor;
 	
+	@SuppressWarnings("unused")
 	private StateBasedEnviroment checkValidity(Enviroment env) throws Exception{
 		if(env instanceof StateBasedEnviroment)
 			return (StateBasedEnviroment) env;
@@ -61,7 +59,6 @@ public class QLearning extends GenericOptimizator implements StateOptimization, 
 		System.out.println(this.epochs);
 		for(int epochi = 0; epochi < this.epochs; epochi++) {
 			this.sEnvT.resetWorld();
-			System.out.println("ola");
 			int newAction, nextState;
 			for(int statei = 0; !this.sEnvT.isEndState(); statei++) {
 				if(Math.random() < explorationAlgorithms.getExplorationRate(this.expFunction, this.explorationRate,statei,0)) 
@@ -109,31 +106,12 @@ public class QLearning extends GenericOptimizator implements StateOptimization, 
 	}
 
 
-	public void printResult() {
-		for(int i = 0; i < this.stateSize ; i++ ) {
-			for(int j = 0; j < this.actSize; j++) {
-				System.out.print(this.QsaMatrix[i][j] + "  :  ");
-			}
-			System.out.println();
-		}
-		
+	public String printResult() {
 		this.sEnvT.resetWorld();
-		System.out.println("State 0 : " + this.sEnvT.getCurrentState());
-		System.out.println(this.sEnvT.getRewardFromState(this.sEnvT.getCurrentState()));
-		int[] q = this.sEnvT.fromIntStateToRealState(this.sEnvT.getCurrentState());
-		System.out.println(q[0] + " : " + q[1]);
-		int i = 0;
-		while(!this.sEnvT.isEndState() && i<30) {
-			int newAction;
-			newAction = getGreedyAction(this.sEnvT.getCurrentState(), this.actSize);
-			System.out.println("Moving " + newAction);
-			this.sEnvT.doAction(newAction);
-			System.out.println("State " + i + " : " + this.sEnvT.getCurrentState());
-			System.out.println(this.sEnvT.getRewardFromState(this.sEnvT.getCurrentState()));
-			q = this.sEnvT.fromIntStateToRealState(this.sEnvT.getCurrentState());
-			System.out.println(q[0] + " : " + q[1]);
-			i++;
-		}
+		for(int i = 0; !this.sEnvT.isEndState() && i<30; i++)
+			this.sEnvT.doAction(getGreedyAction(this.sEnvT.getCurrentState(), this.actSize));
+		
+		return "Se ha obtenido un reward de "+this.sEnvT.getRewardFromState(this.sEnvT.getCurrentState());
 	
 	}
 
@@ -144,7 +122,6 @@ public class QLearning extends GenericOptimizator implements StateOptimization, 
 
 	public void run() {
 		minimizeEpochs();
-		
 	}
 
 

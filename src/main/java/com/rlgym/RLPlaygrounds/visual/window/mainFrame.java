@@ -5,8 +5,6 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
@@ -15,16 +13,13 @@ import com.rlgym.RLPlaygrounds.algorithms.optimization.categories.OptimizationNa
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JButton;
-import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 
 import com.rlgym.RLPlaygrounds.configuration.config;
@@ -32,16 +27,16 @@ import com.rlgym.RLPlaygrounds.enviroment.games.GameName;
 import com.rlgym.RLPlaygrounds.manager.Manager;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
-import javax.swing.JEditorPane;
 import java.awt.BorderLayout;
 import javax.swing.JTextPane;
-import javax.swing.BoxLayout;
 import java.awt.GridLayout;
 
 public class mainFrame {
 
-	private JFrame frmRlplayground;
+	// TODO cerrar el archivo de Log al cerrar la ventana
 	
+	private JFrame frmRlplayground;
+	JTextPane textPane;
 	private Manager manager;
 
 	/**
@@ -64,6 +59,12 @@ public class mainFrame {
 	 * Create the application.
 	 */
 	public mainFrame() {
+		try {
+			com.rlgym.RLPlaygrounds.manager.Log.initLog();
+		} catch (IOException e) {
+			System.out.println("No se ha podido ejecutar el inicio del Log");
+		}
+		
 		config.initConfig();
 		initialize();
 	}
@@ -71,6 +72,7 @@ public class mainFrame {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frmRlplayground = new JFrame();
 		frmRlplayground.setResizable(false);
@@ -107,9 +109,9 @@ public class mainFrame {
 		JLabel lblAlgoritmo = new JLabel("Algoritmos");
 		panel_7.add(lblAlgoritmo);
 		
-		final JComboBox comboBox_1 = new JComboBox();
+		final JComboBox<OptimizationNames> comboBox_1 = new JComboBox<OptimizationNames>();
 		panel_7.add(comboBox_1);
-		comboBox_1.setModel(new DefaultComboBoxModel(OptimizationNames.values()));
+		comboBox_1.setModel(new DefaultComboBoxModel<OptimizationNames>(OptimizationNames.values()));
 		comboBox_1.setEditable(true);
 		
 		JPanel panel_8 = new JPanel();
@@ -118,10 +120,10 @@ public class mainFrame {
 		JLabel lblEnviroment = new JLabel("Enviroment");
 		panel_8.add(lblEnviroment);
 		
-		final JComboBox comboBox = new JComboBox();
+		final JComboBox<GameName> comboBox = new JComboBox<GameName>();
 		panel_8.add(comboBox);
 		comboBox.setEditable(true);
-		comboBox.setModel(new DefaultComboBoxModel(GameName.values()));
+		comboBox.setModel(new DefaultComboBoxModel<GameName>(GameName.values()));
 		
 		JPanel parameterPanel = new JPanel();
 		upperControlPanel.add(parameterPanel);
@@ -166,15 +168,6 @@ public class mainFrame {
 				manager.OptimizeAgent();
 			}
 		});
-		
-		JButton btnStart = new JButton("Print");
-		buttonPanel.add(btnStart);
-		btnStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				manager.printResult();
-			}
-		});
-		
 		JPanel leftPanel = new JPanel();
 		frmRlplayground.getContentPane().add(leftPanel);
 		leftPanel.setLayout(new GridLayout(2, 0, 0, 0));
@@ -182,8 +175,24 @@ public class mainFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		leftPanel.add(scrollPane);
 		
-		JTextPane textPane = new JTextPane();
+		textPane = new JTextPane();
 		scrollPane.setViewportView(textPane);
+		
+		JButton btnStart = new JButton("Print");
+		buttonPanel.add(btnStart);
+		btnStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String result = manager.printResult();
+				try {
+					com.rlgym.RLPlaygrounds.manager.Log.addLogLine(result);
+				} catch (IOException e) {
+					System.err.println("Ha habido un error al añadir una linea al Log");
+				}
+				textPane.setText(textPane.getText()+"\n" + result);
+			}
+		});
+		
+		
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		leftPanel.add(scrollPane_1);

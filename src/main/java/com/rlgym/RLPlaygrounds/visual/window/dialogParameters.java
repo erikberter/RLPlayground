@@ -1,16 +1,14 @@
 package com.rlgym.RLPlaygrounds.visual.window;
 
-import java.awt.BorderLayout;
+
 import java.awt.FlowLayout;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
@@ -19,15 +17,10 @@ import javax.swing.event.ChangeListener;
 import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
 import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.configuration.config;
-import com.rlgym.RLPlaygrounds.enviroment.games.GameName;
 
 import javax.swing.event.ChangeEvent;
-
+@SuppressWarnings("serial")
 public class dialogParameters extends JDialog {
-
-	/**
-	 * Create the dialog.
-	 */
 	
 	// TODO Cambiar las funciones de las barras a la que esta en config para evitar errores
 	JSlider sldExploration,sldEpoch,sldDiscFactor,sldLearningRate;
@@ -130,9 +123,9 @@ public class dialogParameters extends JDialog {
 		sldExploration.setBounds(10, 36, 200, 26);
 		parExplorePanel.add(sldExploration);
 		
-		JComboBox comboBox = new JComboBox();
+		JComboBox<explorationFunction> comboBox = new JComboBox<explorationFunction>();
 		comboBox.setBounds(10, 98, 200, 20);
-		comboBox.setModel(new DefaultComboBoxModel(explorationFunction.values()));
+		comboBox.setModel(new DefaultComboBoxModel<explorationFunction>(explorationFunction.values()));
 		parExplorePanel.add(comboBox);
 		
 		JLabel lblExploringDecayFunction = new JLabel("Exploring Decay Function");

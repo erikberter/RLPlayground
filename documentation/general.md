@@ -1,7 +1,7 @@
-# Tabla de Clases
+# Contenidos
 
-***
-***
+
+## Tabla de Paquetes
 1. [Optimizadores](#Optimizadores)
 2. [Enviroment](#Enviroment)
 3. [Exploration](#Exploration)
@@ -9,7 +9,7 @@
 4. [Manager](#Manager)
 
 5. [Visual](#Visual)
-  
+ 
 ***
 
 ## Algorithms
@@ -40,6 +40,13 @@ Paquete:`com.rlgym.RLPlayground.algorithms.miscelanea`
 Contenido:
 * **helpers**(_Class_): Clase con varios métodos ad hoc.
 
+## Configuration
+
+Paquete:`com.rlgym.RLPlayground.configurations`
+Contenido:
+* **config**(_Class_): Clase con mapas estaticos como configuración.
+
+
 ## Enviroment   
 
 Paquete:`com.rlgym.RLPlayground.enviroment`  
@@ -58,9 +65,20 @@ Paquete:`com.rlgym.RLPlayground.enviroment.games`
 Contenido:
 * **GameName**(_Enum_): Lista de los juegos en el proyecto.
 
-
-
 ## Manager
 
+Paquete:`com.rlgym.RLPlayground.manager`
+Contenido:
+* **Log**(_Class_): Clase que hostea el archivo de configuración.
+* **Manager**(_Class_): Clase encarda de ejecutar y conducir el runtime de los algoritmos de RL.
+
+
+
 ## Visual
+
+Paquete:`com.rlgym.RLPlayground.visual.window`
+Contenido:
+* **dialogHiperParametersDQN**(_Class_): Dialogo de la configuración de los parametros.
+* **dialogParameters**(_Class_): Dialogo de la configuración de los hiperparametros para el algoritmo DQN.
+* **mainFrame**(_Class_): Frame principal.
     

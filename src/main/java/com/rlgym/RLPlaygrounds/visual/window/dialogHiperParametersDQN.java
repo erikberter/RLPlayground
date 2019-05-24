@@ -1,16 +1,13 @@
 package com.rlgym.RLPlaygrounds.visual.window;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.JComboBox;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
@@ -21,13 +18,14 @@ import com.rlgym.RLPlaygrounds.configuration.config;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JRadioButton;
 
+@SuppressWarnings("serial")
 public class dialogHiperParametersDQN extends JDialog {
 	private JTextField tfSeed;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
 
-	JLabel lblUpdaterRate,lblUpdater, lblMinibatch,lblHeight, lblChannels, lblSeed, 
+	JLabel lblUpdaterRate, lblMinibatch,lblHeight, lblChannels, lblSeed, 
 		lblTrainingMethod, lblRewardOnStep, lblWidth;
 	JSlider updateRateSLD, RewardOnStepSLD, MinibatchSLd;
 		
@@ -89,18 +87,9 @@ public class dialogHiperParametersDQN extends JDialog {
 		lblTrainingMethod.setBounds(10, 11, 200, 14);
 		panel_2.add(lblTrainingMethod);
 		
-		lblUpdater = new JLabel("Updater");
-		lblUpdater.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUpdater.setBounds(291, 56, 200, 14);
-		panel_2.add(lblUpdater);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(291, 81, 200, 20);
-		panel_2.add(comboBox);
-		
 		lblUpdaterRate = new JLabel("Updater Rate");
 		lblUpdaterRate.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUpdaterRate.setBounds(291, 112, 200, 14);
+		lblUpdaterRate.setBounds(291, 61, 200, 14);
 		panel_2.add(lblUpdaterRate);
 		
 		updateRateSLD = new JSlider();
@@ -113,7 +102,7 @@ public class dialogHiperParametersDQN extends JDialog {
 				lblUpdaterRate.setText("Update Rate (" + String.valueOf(helpers.getDFMap(config.parameters,"update_rate"))+ ")");
 			}
 		});
-		updateRateSLD.setBounds(291, 137, 200, 26);
+		updateRateSLD.setBounds(291, 86, 200, 26);
 		panel_2.add(updateRateSLD);
 		
 		JPanel panel = new JPanel();

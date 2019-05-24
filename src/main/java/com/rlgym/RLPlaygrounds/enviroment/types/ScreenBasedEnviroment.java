@@ -1,7 +1,5 @@
 package com.rlgym.RLPlaygrounds.enviroment.types;
 
-import java.util.ArrayList;
-
 import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
 
 public interface ScreenBasedEnviroment extends Enviroment {

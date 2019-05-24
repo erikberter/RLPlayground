@@ -1,8 +1,6 @@
 package com.rlgym.RLPlaygrounds.algorithms.optimization.categories;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
 
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -18,15 +16,11 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.learning.config.RmsProp;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
-import com.rlgym.RLPlaygrounds.algorithms.exploration.explorationFunction;
 import com.rlgym.RLPlaygrounds.algorithms.miscelanea.helpers;
 import com.rlgym.RLPlaygrounds.algorithms.optimization.EnviromentOptimization;
-import com.rlgym.RLPlaygrounds.algorithms.optimization.Optimization;
-import com.rlgym.RLPlaygrounds.enviroment.Enviroment;
 import com.rlgym.RLPlaygrounds.enviroment.EnviromentTypes;
 import com.rlgym.RLPlaygrounds.enviroment.types.ScreenBasedEnviroment;
 
@@ -44,7 +38,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 	private int inputHeight, inputWidth, inputChannels, printResult;
 	private boolean printResultB;
 	//Neural network hiperparameters
-	private int seed, numInputs, numOutputs, minibatch, memoryClean;
+	private int seed, numOutputs, minibatch, memoryClean;
 	private double updaterRate, discountFactor;
 	
 	//Information for global computing
@@ -109,7 +103,6 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		this.printResultB = helpers.getBFMap(config.parameters,"is_print_after_steps");
 		// hiperparameters
 		this.seed = helpers.getIFMap(config.hiperParameters,"seed");
-		this.numInputs= helpers.getIFMap(config.hiperParameters,"n_input");
 		this.numOutputs= helpers.getIFMap(config.hiperParameters,"n_outputs");
 		
 		this.inputHeight = helpers.getIFMap(config.hiperParameters,"input_height");
@@ -140,7 +133,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 			if(printResultB & i%printResult==0) printResult();
 			if(i%10==0) printResult();
 			// TODO establecer el valor C para limpiar memoria
-			if(i%500==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
+			if(i%this.memoryClean==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
 			
 			while(!this.sEnvT.isEndState()) {
 				if(Math.random() < this.explorationRate)
@@ -163,7 +156,6 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 						INDArray inputTemp = Nd4j.create(episodes.get(epPoint+j).get(0));
 						inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 						INDArray yJT = this.model.output(inputTemp);//Q(s;0)
-						double tempCoord = yJT.getDouble(actionT);//Q(s,a;0)
 						yJT.putScalar(new int[] {actionT},yJ);//Q(s,a;0)y_j
 						DataSet ds = new DataSet(inputTemp, yJT);
 						this.model.fit(ds);
@@ -242,7 +234,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		return actionT;
 	}
 	
-	public void printResult() {
+	public String printResult() {
 		int newAction;
 		this.sEnvT.resetWorld();
 		//int[] currentState = new int[] {5,7,5};
@@ -255,7 +247,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		}
 		if(this.sEnvT.getRewardFromState()>0) System.out.println("WIN!");
 		else System.out.println("LOSE :_C");
-		
+		return "El resultado ha sido de " + (( this.sEnvT.getRewardFromState()>0 ) ? "Win" : "Lose");
 	}
 	
 	public int getResult() {

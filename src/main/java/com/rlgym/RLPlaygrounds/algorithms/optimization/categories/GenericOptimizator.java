@@ -24,7 +24,6 @@ public abstract class GenericOptimizator implements Optimization, Runnable{
 		}
 		return this;
 	}
-	//Gi
 	
 	private Enviroment checkValidity(Enviroment env, EnviromentTypes envTp) throws Exception{
 		switch(envTp){
@@ -32,15 +31,15 @@ public abstract class GenericOptimizator implements Optimization, Runnable{
 			if(env instanceof ScreenBasedEnviroment)
 				return (ScreenBasedEnviroment) env;
 			else
-				throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
+				throw new Exception("The instance of the enviroment you tried to use is not ScreenBased");
 		case STATE_BASED:
 			if(env instanceof StateBasedEnviroment)
 				return (StateBasedEnviroment) env;
 			else
-				throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
+				throw new Exception("The instance of the enviroment you tried to use is not State Based");
 		default:
-			throw new Exception("The enviroment type sent to minimizeEpochs is not Static");
-		}// TODO cambiar texto de error
+			throw new Exception("The instance of the enviroment you tried to use does not exist");
+		}
 		
 	}
 }

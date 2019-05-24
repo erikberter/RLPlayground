@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@SuppressWarnings("serial")
 public class config extends Throwable{
 
 	public static Map<String, Object> parameters;
@@ -32,7 +33,6 @@ public class config extends Throwable{
 	public static void resetHiperParameters(){
 		hiperParameters.put("seed", 142);
 		hiperParameters.put("updater_rate", 0.001);
-		hiperParameters.put("n_input", 6);
 		hiperParameters.put("n_hidden_nodes", 5);
 		hiperParameters.put("n_outputs", 3);
 		hiperParameters.put("minibatch", 22);
@@ -40,7 +40,7 @@ public class config extends Throwable{
 		hiperParameters.put("input_height", 5);
 		hiperParameters.put("input_width", 6);
 		hiperParameters.put("input_channels", 1);
-		hiperParameters.put("memory_clean", 400);
+		hiperParameters.put("memory_clean", 500);
 	}
 	
 	
