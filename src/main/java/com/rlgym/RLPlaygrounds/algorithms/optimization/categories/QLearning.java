@@ -11,9 +11,7 @@ import com.rlgym.RLPlaygrounds.configuration.config;
 
 public class QLearning extends GenericOptimizator implements StateOptimization, Runnable{
 	
-	
 	private StateBasedEnviroment sEnvT;
-	// TODO inicializar las variables
 	double[][] QsaMatrix;
 	private int stateSize, actSize, epochs;
 	private double explorationRate, learningRate, rewardOnStep, discountFactor;
@@ -56,7 +54,6 @@ public class QLearning extends GenericOptimizator implements StateOptimization, 
 	}
 	
 	public void minimizeEpochs() {
-		System.out.println(this.epochs);
 		for(int epochi = 0; epochi < this.epochs; epochi++) {
 			this.sEnvT.resetWorld();
 			int newAction, nextState;
@@ -101,7 +98,24 @@ public class QLearning extends GenericOptimizator implements StateOptimization, 
 	}
 
 	public void minimizeLoss() {
-		// TODO Hacer la minimize Loss
+		//TODO Cambiar el True por actLoss y expectedLoss
+		while(true){
+			this.sEnvT.resetWorld();
+			int newAction, nextState;
+			for(int statei = 0; !this.sEnvT.isEndState(); statei++) {
+				if(Math.random() < explorationAlgorithms.getExplorationRate(this.expFunction, this.explorationRate,statei,0)) 
+					newAction = getRandomAction(this.actSize);
+				else 
+					newAction = getGreedyAction(this.sEnvT.getCurrentState(), this.actSize);
+				nextState = this.sEnvT.doActionS(newAction);
+				double reward = this.sEnvT.getRewardFromState(nextState) + this.rewardOnStep;
+				double maxQsaValue = this.QsaMatrix[nextState][getGreedyAction(nextState, this.actSize)];
+				
+				this.QsaMatrix[this.sEnvT.getCurrentState()][newAction] = (1-this.learningRate)*this.QsaMatrix[this.sEnvT.getCurrentState()][newAction];
+				this.QsaMatrix[this.sEnvT.getCurrentState()][newAction] += this.learningRate*(reward + (this.discountFactor*maxQsaValue));
+				this.sEnvT.doAction(newAction);
+			}
+		}
 		
 	}
 

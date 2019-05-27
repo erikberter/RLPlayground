@@ -74,7 +74,7 @@ public class GridWorld implements StateBasedEnviroment{
 				this.state+=this.size_X;
 				break;
 			default:
-				//TODO Add error over action
+				System.err.println("The action you stated does not exist. The available options are {0,1,2,3}");
 		}
 		
 	}
@@ -90,13 +90,12 @@ public class GridWorld implements StateBasedEnviroment{
 		case 3:
 			return this.state+this.size_X;
 		default:
-			//TODO Add error over action
+			System.err.println("The action you stated does not exist. The available options are {0,1,2,3}");
 		}
 		return -1;
 	}
 
 	public void printMap(int state) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -110,7 +109,6 @@ public class GridWorld implements StateBasedEnviroment{
 	}
 
 	public int fromRealStateToIntState(int[] state) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -120,10 +118,6 @@ public class GridWorld implements StateBasedEnviroment{
 			return -1;
 		return this.gridWorldRewards[realState[0]-1][realState[1]-1];
 	}
-
-
-
-	
 
 	public int getCurrentState() {
 		return this.state;

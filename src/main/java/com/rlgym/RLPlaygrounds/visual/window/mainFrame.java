@@ -32,8 +32,6 @@ import javax.swing.JTextPane;
 import java.awt.GridLayout;
 
 public class mainFrame {
-
-	// TODO cerrar el archivo de Log al cerrar la ventana
 	
 	private JFrame frmRlplayground;
 	JTextPane textPane;
@@ -67,6 +65,7 @@ public class mainFrame {
 		
 		config.initConfig();
 		initialize();
+		
 	}
 
 	/**

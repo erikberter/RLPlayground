@@ -26,7 +26,6 @@ public class Manager {
 		return this;
 		
 	}
-	// TODO eliminar todos los SYSO
 	public Manager setOptimization(OptimizationNames optimizatorName){
 		//Set the optimization algorithm
 		try {
@@ -51,8 +50,6 @@ public class Manager {
 		//Check if is valid the combination
 		Thread td = new Thread(this.optimizer);
 		td.start();
-		
-		System.out.println("Minimizada");
 	}
 	
 	public String printResult() {

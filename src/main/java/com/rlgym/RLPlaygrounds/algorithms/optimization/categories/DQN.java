@@ -38,7 +38,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 	private int inputHeight, inputWidth, inputChannels, printResult;
 	private boolean printResultB;
 	//Neural network hiperparameters
-	private int seed, numOutputs, minibatch, memoryClean;
+	private int seed, numOutputs, minibatch, memoryClean, epochs;
 	private double updaterRate, discountFactor;
 	
 	//Information for global computing
@@ -53,8 +53,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		this.envType = EnviromentTypes.SCREEN_BASED;
 		
 		
-		// TODO cambiar esto porque no me gusta
-		// Lo suyo sería que tuviera hecho de una forma más clara
+		// Estas dos variables sirven para observar el comportamiento de la media del programa según el epoch
 		this.allVal  = 0;
 		this.kPoint = 0;
 		initializeInternalVariablesFromConfig();
@@ -101,6 +100,9 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		
 		this.printResult = helpers.getIFMap(config.parameters,"print_after_steps");
 		this.printResultB = helpers.getBFMap(config.parameters,"is_print_after_steps");
+		
+		this.epochs = helpers.getIFMap(config.parameters,"epochs");
+		
 		// hiperparameters
 		this.seed = helpers.getIFMap(config.hiperParameters,"seed");
 		this.numOutputs= helpers.getIFMap(config.hiperParameters,"n_outputs");
@@ -115,6 +117,9 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		this.minibatch = helpers.getIFMap(config.hiperParameters,"minibatch");
 		
 		this.memoryClean = helpers.getIFMap(config.hiperParameters,"memory_clean");
+		
+		
+		
 	}
 	
 	
@@ -122,18 +127,15 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 	public void minimizeEpochs() {
 		
 		this.episodes = new ArrayList<ArrayList<double[][]>>();
-		
-		// TODO arreglar tema epochs para que sea viable
-		//for(int i  = 1; i < dataExchange.getIFMap(parameters,"epochs");i++){
-		for(int i = 1; i < 10000; i++) {
-			int newAction;
+		int newAction;
+		for(int i  = 1; i < this.epochs;i++){
+			System.out.println("Estamos en el "+i+ " con un size de " + this.episodes.size());
 			this.sEnvT.resetWorld();
 			
-			// TODO eliminar o modificar esta sección
-			if(printResultB & i%printResult==0) printResult();
-			if(i%10==0) printResult();
-			// TODO establecer el valor C para limpiar memoria
-			if(i%this.memoryClean==0) episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
+			// TODO añadir a el JDialog estas dos opciones
+			if(this.printResultB & i%this.printResult==0) printResult();
+			
+			if(i%this.memoryClean==0) this.episodes = new ArrayList<ArrayList<double[][]>>();//Clean Memory
 			
 			while(!this.sEnvT.isEndState()) {
 				if(Math.random() < this.explorationRate)
@@ -143,17 +145,17 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 				//Each episode is in the form (s_t,a,rwd,s_{t+1},endState?)
 				addEpisode(this.sEnvT, newAction);
 				
-				if(episodes.size() > this.minibatch) {
-					int epPoint = (int)(Math.random()*(episodes.size()-this.minibatch));
+				if(this.episodes.size() > this.minibatch) {
+					int epPoint = (int)(Math.random()*(this.episodes.size()-this.minibatch));
 					for(int j = 0; j < this.minibatch; j++) {
-						int actionT = (int) episodes.get(epPoint+j).get(1)[0][0];//action
-						double yJ = episodes.get(epPoint+j).get(2)[0][0];
+						int actionT = (int) this.episodes.get(epPoint+j).get(1)[0][0];//action
+						double yJ = this.episodes.get(epPoint+j).get(2)[0][0];
 						
-						if(episodes.get(epPoint+j).get(4)[0][0]==1.0)
-							yJ+=this.discountFactor*getGreedyValue(episodes.get(epPoint+j).get(3), this.sEnvT.getActionNumber());
+						if(this.episodes.get(epPoint+j).get(4)[0][0]==1.0)
+							yJ+=this.discountFactor*getGreedyValue(this.episodes.get(epPoint+j).get(3), this.sEnvT.getActionNumber());
 						
 						
-						INDArray inputTemp = Nd4j.create(episodes.get(epPoint+j).get(0));
+						INDArray inputTemp = Nd4j.create(this.episodes.get(epPoint+j).get(0));
 						inputTemp = inputTemp.reshape(new int[] {1,this.inputChannels,this.inputHeight,this.inputWidth});
 						INDArray yJT = this.model.output(inputTemp);//Q(s;0)
 						yJT.putScalar(new int[] {actionT},yJ);//Q(s,a;0)y_j
@@ -179,7 +181,7 @@ public class DQN  extends GenericOptimizator implements EnviromentOptimization, 
 		tempEpisode.add(new double[][] {{sEnvT.getRewardFromState()}});
 		tempEpisode.add(sEnvT.getStateMap());
 		tempEpisode.add(new double[][] {{(sEnvT.isEndState())? 1.0: 0.0}});
-		episodes.add(tempEpisode);
+		this.episodes.add(tempEpisode);
 	}
 	
 	

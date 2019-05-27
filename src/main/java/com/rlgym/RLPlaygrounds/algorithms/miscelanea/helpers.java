@@ -15,7 +15,7 @@ public class helpers {
 		}
 		return 0;
 		 
-	}//Añadir a todas el try/catch
+	}
 	
 	public static int getIFMap(Map<String, Object> map, String name) {
 		try{
