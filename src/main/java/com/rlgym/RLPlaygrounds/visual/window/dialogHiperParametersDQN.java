@@ -107,6 +107,10 @@ public class dialogHiperParametersDQN extends JDialog {
 		updateRateSLD.setBounds(291, 86, 200, 26);
 		panel_2.add(updateRateSLD);
 		
+		JLabel lblNotYetImplemented = new JLabel("Not yet implemented");
+		lblNotYetImplemented.setBounds(10, 86, 200, 14);
+		panel_2.add(lblNotYetImplemented);
+		
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Batches", null, panel, null);
 		panel.setLayout(null);
@@ -178,5 +182,9 @@ public class dialogHiperParametersDQN extends JDialog {
 		textField_2.setBounds(202, 36, 86, 20);
 		panel_3.add(textField_2);
 		textField_2.setColumns(10);
+		
+		JLabel lblNotYetImplemened = new JLabel("Not yet implemened");
+		lblNotYetImplemened.setBounds(10, 67, 278, 14);
+		panel_3.add(lblNotYetImplemened);
 	}
 }
